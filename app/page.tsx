@@ -1,65 +1,96 @@
-import Image from "next/image";
+// Home page — migrado de: templates/index.liquid
+// Server Component — fetches products via CartPanda API
 
-export default function Home() {
+import HeroSection from "@/components/home/HeroSection";
+import EntryBoosterBanner from "@/components/home/EntryBoosterBanner";
+import CountdownTimer from "@/components/home/CountdownTimer";
+import FastPassGrid from "@/components/home/FastPassGrid";
+import MysteryBanner from "@/components/home/MysteryBanner";
+import GiveawaySection from "@/components/home/GiveawaySection";
+import FeaturedProducts from "@/components/home/FeaturedProducts";
+import TestimonialsSection from "@/components/home/TestimonialsSection";
+import FaqSection from "@/components/home/FaqSection";
+import { getProducts, enrichProduct } from "@/lib/cartpanda/products";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Win a 2026 BMW M4 Cummins + $10,000 | f7nt.co",
+  description:
+    "Shop f7nt.co and automatically earn entries to win a 2026 Limited BMW M4 Cummins + $10,000 cash. Every $1 spent = 200 entries.",
+};
+
+export const revalidate = 3600; // ISR: revalidate every 1 hour
+
+async function getHomeProducts() {
+  try {
+    const allProducts = await getProducts({ limit: 20 });
+    return allProducts.map(enrichProduct);
+  } catch {
+    return [];
+  }
+}
+
+export default async function HomePage() {
+  const products = await getHomeProducts();
+  const multiplier = parseInt(
+    process.env.NEXT_PUBLIC_ENTRIES_MULTIPLIER ?? "200",
+    10
+  );
+
+  // Fast pass products: filter by title or tags
+  const fastPassProducts = products
+    .filter(
+      (p) =>
+        p.title.toLowerCase().includes("fast pass") ||
+        p.title.toLowerCase().includes("fastpass") ||
+        p.tags?.some(
+          (t) =>
+            t.toLowerCase().includes("fast-pass") ||
+            t.toLowerCase().includes("fastpass")
+        )
+    )
+    .slice(0, 4);
+
+  // General catalog products
+  const generalProducts = products
+    .filter((p) => !fastPassProducts.includes(p))
+    .slice(0, 8);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <>
+      {/* 1. Hero — fullwidth clickable banner */}
+      <HeroSection />
+
+      {/* 2. Entry Booster Banner */}
+      <EntryBoosterBanner />
+
+      {/* 3. Countdown Timer */}
+      <CountdownTimer />
+
+      {/* 4. Fast Pass Tiers */}
+      <FastPassGrid products={fastPassProducts} />
+
+      {/* 5. Mystery Cash Boxes */}
+      <MysteryBanner />
+
+      {/* 6. Giveaway / Prize Section */}
+      <GiveawaySection />
+
+      {/* 7. Featured Apparel/Products */}
+      {generalProducts.length > 0 && (
+        <FeaturedProducts
+          products={generalProducts}
+          title="NEW ARRIVALS"
+          eyebrow="JUST-IN"
+          multiplier={multiplier}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      )}
+
+      {/* 8. Testimonials */}
+      <TestimonialsSection />
+
+      {/* 9. FAQ */}
+      <FaqSection />
+    </>
   );
 }

@@ -1,26 +1,217 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ─── Base Styles ─────────────────────────────────────────────── */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  html,
+  body {
+    overflow-x: hidden !important;
+    scroll-behavior: smooth;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    background-color: #f2f2f2;
+    color: #1a1a1a;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+    letter-spacing: 0.06em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Montserrat", sans-serif;
+    color: #1a1a1a;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #1a1a1a;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #ae0303;
+    border-radius: 3px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─── Component Layer ─────────────────────────────────────────── */
+@layer components {
+  .container-main {
+    @apply max-w-container mx-auto px-5;
+  }
+
+  /* ── Glow effects ── */
+  .glow-red {
+    text-shadow: 0 0 10px #740404, 0 0 20px #740404, 0 0 30px #740404;
+  }
+
+  .glow-gray {
+    text-shadow: 0 0 10px #707070, 0 0 20px #707070, 0 0 30px #707070;
+  }
+
+  /* ── Badges ── */
+  .badge-shimmer {
+    @apply relative overflow-hidden;
+  }
+
+  .badge-shimmer::after {
+    content: "";
+    @apply absolute top-0 w-3/5 h-full;
+    left: -100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+  }
+
+  /* Badge tier gradients */
+  .badge-tier-black {
+    background: radial-gradient(circle, #df2b19 0%, #6b1006 100%);
+    @apply text-white;
+  }
+
+  .badge-tier-platinum {
+    background: radial-gradient(circle, #3498db 0%, #123e5c 100%);
+    @apply text-white;
+  }
+
+  .badge-tier-gold {
+    background: radial-gradient(circle, #f7dc6f 0%, #b38500 100%);
+    color: #1a1a1a;
+  }
+
+  .badge-tier-bronze {
+    background: radial-gradient(circle, #e8a96a 0%, #8f4d15 100%);
+    @apply text-white;
+  }
+
+  /* ── Buttons ── */
+  .btn-primary {
+    @apply bg-brand-black text-white font-bold text-sm uppercase tracking-wider px-5 py-3.5 rounded transition-all duration-200;
+    letter-spacing: 1px;
+  }
+
+  .btn-primary:hover {
+    @apply bg-[#333];
+  }
+
+  .btn-primary:active {
+    transform: scale(0.97);
+  }
+
+  .btn-cta {
+    @apply text-white font-bold uppercase rounded transition-all duration-200;
+    background-color: #f72c3d;
+    letter-spacing: 1px;
+  }
+
+  .btn-cta:hover {
+    background-color: #cc0000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  .btn-atc {
+    @apply bg-[#f2f2f2] text-black font-normal text-[15px] min-h-[47px] w-full px-7 rounded-none transition-colors duration-200;
+  }
+
+  .btn-buy-now {
+    @apply bg-black text-white font-normal text-[15px] min-h-[47px] w-full px-7 py-3.5 rounded-none transition-colors duration-200;
+  }
+
+  /* ── Cards ── */
+  .card-fast-pass {
+    @apply bg-white rounded-xl shadow-card flex flex-col items-center text-center p-5 transition-all duration-300;
+  }
+
+  .card-fast-pass:hover {
+    transform: translateY(-4px);
+    @apply shadow-card-hover;
+  }
+
+  .card-testimonial {
+    @apply bg-white rounded-2xl p-8 transition-all duration-300;
+    border: 0.8px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .card-testimonial:hover {
+    @apply shadow-testimonial-hover;
+  }
+
+  .card-product {
+    @apply bg-black rounded-md overflow-hidden;
+  }
+
+  /* ── FAQ ── */
+  .faq-item {
+    @apply bg-white rounded shadow-faq overflow-hidden;
+    border: 0.8px solid #f0f0f0;
+  }
+
+  /* ── Progress bar glow ── */
+  .progress-bar-glow {
+    animation: pulse-green 2s ease-in-out infinite;
+  }
+}
+
+/* ─── Utilities Layer ─────────────────────────────────────────── */
+@layer utilities {
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+
+  .animate-pulse-green {
+    animation: pulse-green 2s ease-in-out infinite;
+  }
+}
+
+/* ─── Keyframes ───────────────────────────────────────────────── */
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+@keyframes pulse-green {
+  0%,
+  100% {
+    box-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+  }
+  50% {
+    box-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00, 0 0 45px #00cc00;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
