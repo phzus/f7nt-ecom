@@ -6,14 +6,21 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const token = process.env.CARTPANDA_API_TOKEN;
-  const domain = process.env.CARTPANDA_STORE_DOMAIN;
+  // Support both CARTPANDA_STORE_DOMAIN (legacy) and the actual env vars used by the app
+  const baseUrl = process.env.CARTPANDA_BASE_URL;
+  const storeSlug = process.env.CARTPANDA_STORE_SLUG;
 
-  if (!token || !domain) {
+  if (!token || (!baseUrl && !storeSlug)) {
     return NextResponse.json({ error: "Store not configured" }, { status: 500 });
   }
 
   const query = searchParams.toString();
-  const apiUrl = `https://${domain}/api/v3/products${query ? `?${query}` : ""}`;
+  // Build URL from CARTPANDA_BASE_URL + CARTPANDA_STORE_SLUG (e.g. https://accounts.cartpanda.com/api/v3/funtfit)
+  const apiBase = baseUrl && storeSlug ? `${baseUrl}/${storeSlug}` : null;
+  if (!apiBase) {
+    return NextResponse.json({ error: "Store not configured" }, { status: 500 });
+  }
+  const apiUrl = `${apiBase}/products${query ? `?${query}` : ""}`;
 
   const response = await fetch(apiUrl, {
     headers: {

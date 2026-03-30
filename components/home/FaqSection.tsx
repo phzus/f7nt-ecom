@@ -9,28 +9,24 @@ interface FaqItem {
 
 const FAQ_ITEMS: FaqItem[] = [
   {
-    question: "How do the sweepstakes entries work?",
-    answer: "Every $1 you spend in our store automatically earns you entries. With our current 200X multiplier, every $1 = 200 entries. Your total entries are calculated in your cart and automatically submitted once your order is placed. No extra steps needed!",
+    question: "Is this legit? Like I could actually win??",
+    answer: "100% YES! We run fully verified sweepstakes — every purchase automatically earns you entries and one lucky winner walks away with the prize. We livestream the draw so everything is transparent. Every $1 spent = 200 entries, so your chances are real.",
   },
   {
-    question: "What are the prizes?",
-    answer: "The current giveaway features a 2026 Limited BMW M4 Cummins valued at over $80,000, plus $10,000 cash. One lucky winner takes both prizes. The draw date is announced on our social media channels.",
+    question: "How is the winner selected & notified?",
+    answer: "Winners are selected randomly through a verified third-party platform. The draw is livestreamed on our social media. Once selected, the winner is contacted via the email used at checkout — so make sure your info is correct when you order!",
   },
   {
-    question: "What are Fast Pass products?",
-    answer: "Fast Pass products are our premium entry packs designed specifically for the giveaway. BLACK (100,000 entries), PLATINUM (80,000), GOLD (30,000), and BRONZE (15,000). These give you the most entries per dollar spent.",
+    question: "I placed an order, how do I know if I'm entered?",
+    answer: "The moment your order is confirmed, your entries are automatically submitted — no extra steps needed. You can see how many entries your purchase earns at checkout. Every $1 you spend = 200 entries toward the current giveaway.",
   },
   {
-    question: "How are winners selected?",
-    answer: "Winners are selected randomly through a verified third-party platform. The draw is livestreamed and the process is fully transparent. All eligible entries have an equal chance of winning.",
+    question: "How do I know if my order has shipped?",
+    answer: "You'll receive a shipping confirmation email with tracking info as soon as your order ships. If you haven't received it within 3-5 business days of your order, reach out to us at support@f7nt.co and we'll look into it right away.",
   },
   {
-    question: "Do I need to purchase to enter?",
-    answer: "While purchases earn entries automatically, there is a free alternative method of entry (AMOE). Visit our contest page or contact us at support@f7nt.co for details on how to enter without a purchase.",
-  },
-  {
-    question: "When does this giveaway end?",
-    answer: "The current giveaway runs until our offer expiration date shown in the countdown timer on our homepage. Sign up for our email list to get notified about new giveaways and promotions.",
+    question: "I have a different question, please help!",
+    answer: "We've got you! Shoot us a message at support@f7nt.co or reach out via Instagram/TikTok @f7nt. We're here to help and typically respond within 24 hours.",
   },
 ];
 
@@ -49,7 +45,7 @@ export default function FaqSection() {
             FAQ
           </p>
           <h2 className="text-4xl md:text-5xl font-black" style={{ color: "#000", letterSpacing: "-0.02em" }}>
-            FREQUENTLY ASKED
+            THE ANSWERS YOU&apos;RE LOOKING FOR
           </h2>
         </div>
 

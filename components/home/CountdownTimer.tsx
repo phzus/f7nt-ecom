@@ -5,9 +5,10 @@ import { getCountdownTime } from "@/lib/utils";
 const TARGET_DATE = new Date(process.env.NEXT_PUBLIC_COUNTDOWN_DATE ?? "2026-06-01T00:00:00Z");
 
 export default function CountdownTimer() {
-  const [time, setTime] = useState(getCountdownTime(TARGET_DATE));
+  const [time, setTime] = useState<ReturnType<typeof getCountdownTime> | null>(null);
 
   useEffect(() => {
+    setTime(getCountdownTime(TARGET_DATE));
     const interval = setInterval(() => {
       setTime(getCountdownTime(TARGET_DATE));
     }, 1000);
@@ -15,6 +16,24 @@ export default function CountdownTimer() {
   }, []);
 
   const pad = (n: number) => String(n).padStart(2, "0");
+
+  if (!time) return (
+    <section className="w-full py-10" style={{ backgroundColor: "#000" }}>
+      <div className="container-main flex flex-col items-center gap-8" style={{ maxWidth: "1000px" }}>
+        <h2 className="text-4xl md:text-5xl font-bold uppercase text-center glow-red" style={{ color: "#ff0000", letterSpacing: "2px" }}>
+          OFFER EXPIRING IN:
+        </h2>
+        <div className="flex flex-wrap gap-6 md:gap-10 justify-center">
+          {["DAYS","HOURS","MINUTES","SECONDS"].map((label) => (
+            <div key={label} className="flex flex-col items-center gap-2" style={{ minWidth: "80px" }}>
+              <span className="text-5xl font-bold glow-gray tabular-nums" style={{ color: "#fff" }}>00</span>
+              <span className="text-sm font-bold uppercase" style={{ color: "#e22c2c", letterSpacing: "1px" }}>{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
 
   if (time.expired) {
     return (

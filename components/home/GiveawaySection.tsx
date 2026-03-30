@@ -33,8 +33,13 @@ export default function GiveawaySection() {
             className="text-4xl md:text-5xl font-black text-white leading-tight"
             style={{ letterSpacing: "0.84px" }}
           >
-            WIN THIS 2026<br />BMW M4 CUMMINS
+            THIS MURDERED OUT BMW M4<br />COULD BE YOURS
           </h2>
+          <p className="text-base mt-4 max-w-2xl mx-auto" style={{ color: "rgba(255,255,255,0.75)" }}>
+            This fully blacked-out BMW M4 packs an aggressively tuned engine, high-end M Competition
+            components, and the unmistakable road presence of a true luxury sports machine... and it
+            could be YOURS. But hurry — time is running out!
+          </p>
           <p className="text-lg font-bold mt-3" style={{ color: "#00ff00" }}>
             + $10,000 CASH
           </p>

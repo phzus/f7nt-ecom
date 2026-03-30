@@ -1,86 +1,86 @@
 // CartPanda Products API
-// Migrado de: /assets/product-info.js + Liquid product object
 
 import { cartpandaFetch } from "./client";
-import type {
-  CartPandaProduct,
-  CartPandaProductsResponse,
-  CartPandaSingleProductResponse,
-} from "@/types/cartpanda";
+import type { CartPandaProduct } from "@/types/cartpanda";
 
-export async function getProducts(params?: {
-  limit?: number;
-  page?: number;
-  collection_id?: number;
-  sort_by?: string;
-  fields?: string;
-}): Promise<CartPandaProduct[]> {
-  const searchParams = new URLSearchParams();
-  if (params?.limit) searchParams.set("limit", String(params.limit));
-  if (params?.page) searchParams.set("page", String(params.page));
-  if (params?.collection_id)
-    searchParams.set("collection_id", String(params.collection_id));
-  if (params?.sort_by) searchParams.set("sort_by", params.sort_by);
-  if (params?.fields) searchParams.set("fields", params.fields);
+interface ProductsResponse {
+  products?: CartPandaProduct[];
+}
 
-  const query = searchParams.toString();
-  const endpoint = `/products${query ? `?${query}` : ""}`;
-
-  const data = await cartpandaFetch<CartPandaProductsResponse>(endpoint, {
-    revalidate: 3600, // 1 hour ISR
+export async function getProducts(
+  _opts?: { limit?: number }
+): Promise<CartPandaProduct[]> {
+  const data = await cartpandaFetch<ProductsResponse>("/products", {
+    revalidate: 3600,
   });
-
-  return data.products ?? [];
+  const all: CartPandaProduct[] = data?.products ?? [];
+  // CartPanda ignores ?status= query params — filter client-side
+  return all.filter((p) => !p.status || p.status === "active");
 }
 
 export async function getProductByHandle(
   handle: string
 ): Promise<CartPandaProduct | null> {
-  try {
-    const data = await cartpandaFetch<
-      CartPandaProductsResponse | { products: CartPandaProduct[] }
-    >(`/products?handle=${encodeURIComponent(handle)}`, {
-      revalidate: 1800, // 30 min ISR
-    });
-
-    const products =
-      "products" in data ? data.products : (data as CartPandaProductsResponse).products;
-    return products?.[0] ?? null;
-  } catch {
-    return null;
-  }
+  const products = await getProducts();
+  return products.find((p) => p.handle === handle) ?? null;
 }
 
 export async function getProductById(
   id: number
 ): Promise<CartPandaProduct | null> {
-  try {
-    const data = await cartpandaFetch<CartPandaSingleProductResponse>(
-      `/products/${id}`,
-      { revalidate: 1800 }
-    );
-    return data.product ?? null;
-  } catch {
-    return null;
-  }
+  const data = await cartpandaFetch<{ product?: CartPandaProduct } | CartPandaProduct>(
+    `/products/${id}`,
+    { revalidate: 1800 }
+  );
+  return (data as { product?: CartPandaProduct })?.product ?? (data as CartPandaProduct) ?? null;
 }
 
 export async function getAllProductHandles(): Promise<string[]> {
-  const products = await getProducts({ fields: "handle", limit: 250 });
-  return products.map((p) => p.handle);
+  const products = await getProducts();
+  return products.map((p) => p.handle).filter(Boolean);
 }
 
-// Utility: compute price range and availability from variants
+// Utility: normalize and enrich a raw CartPanda product
 export function enrichProduct(product: CartPandaProduct): CartPandaProduct {
-  const prices = product.variants
-    .map((v) => parseFloat(v.price))
-    .filter((p) => !isNaN(p));
+  // 1. Normalize images: replace relative `src` with absolute `url`
+  const images = product.images.map((img) => ({
+    ...img,
+    src: img.url || img.src,
+  }));
+
+  // 2. Normalize variants:
+  //    - If variants array is empty, promote product_default_variant
+  //    - Add computed `available`, `option1/2/3` fields
+  let rawVariants = product.variants;
+  if (rawVariants.length === 0 && product.product_default_variant) {
+    rawVariants = [product.product_default_variant as CartPandaProduct["variants"][0]];
+  }
+
+  const variants = rawVariants.map((v) => ({
+    ...v,
+    // available: allow selling if prevent_out_of_stock_selling=0 (always sell) OR has qty
+    available: v.prevent_out_of_stock_selling === 0 || v.quantity > 0,
+    // Map title → option1 for VariantSelector compatibility
+    option1: v.title ?? null,
+    option2: null,
+    option3: null,
+  }));
+
+  // 3. Compute price range from normalized variants
+  const prices = variants
+    .map((v) => Number(v.price))
+    .filter((p) => !isNaN(p) && p > 0);
+
+  const priceMin = prices.length > 0 ? Math.min(...prices) : 0;
+  const priceMax = prices.length > 0 ? Math.max(...prices) : 0;
 
   return {
     ...product,
-    price_min: prices.length > 0 ? Math.min(...prices) : 0,
-    price_max: prices.length > 0 ? Math.max(...prices) : 0,
-    available: product.variants.some((v) => v.available !== false),
-    featured_image: product.images?.[0] ?? null,
+    images,
+    variants,
+    price_min: priceMin,
+    price_max: priceMax,
+    available: variants.some((v) => v.available),
+    featured_image: images[0] ?? null,
   };
 }

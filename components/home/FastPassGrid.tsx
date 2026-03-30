@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { CartPandaProduct } from "@/types/cartpanda";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, calcProductEntries } from "@/lib/utils";
 import AddToCartButton from "@/components/product/AddToCartButton";
 
 type Tier = "BLACK" | "PLATINUM" | "GOLD" | "BRONZE";
@@ -13,18 +13,28 @@ interface FastPassTier {
   badgeClass: string;
 }
 
+// TODO: connect entry counts to CartPanda metafields when available.
+// Until then, these values are the canonical source of truth for the UI.
 const TIERS: FastPassTier[] = [
-  { tier: "BLACK", entries: "100,000", label: "BLACK", badgeClass: "badge-tier-black" },
-  { tier: "PLATINUM", entries: "80,000", label: "PLATINUM", badgeClass: "badge-tier-platinum" },
-  { tier: "GOLD", entries: "30,000", label: "GOLD", badgeClass: "badge-tier-gold" },
-  { tier: "BRONZE", entries: "15,000", label: "BRONZE", badgeClass: "badge-tier-bronze" },
+  { tier: "BLACK",    entries: "100,000", label: "BLACK",    badgeClass: "badge-tier-black"    },
+  { tier: "PLATINUM", entries: "80,000",  label: "PLATINUM", badgeClass: "badge-tier-platinum" },
+  { tier: "GOLD",     entries: "30,000",  label: "GOLD",     badgeClass: "badge-tier-gold"     },
+  { tier: "BRONZE",   entries: "15,000",  label: "BRONZE",   badgeClass: "badge-tier-bronze"   },
 ];
 
 interface FastPassGridProps {
   products: CartPandaProduct[];
+  multiplier?: number;
 }
 
-export default function FastPassGrid({ products }: FastPassGridProps) {
+export default function FastPassGrid({ products, multiplier = 200 }: FastPassGridProps) {
+  if (process.env.NODE_ENV === "development" && products.length < TIERS.length) {
+    console.warn(
+      `[FastPassGrid] Expected ${TIERS.length} fast-pass products but received ${products.length}. ` +
+        `Check that CartPanda products have "fast pass" in title or "fastpass" tag.`
+    );
+  }
+
   return (
     <section className="w-full py-14" style={{ backgroundColor: "#f5f5f5" }}>
       <div className="container-main">
@@ -43,13 +53,19 @@ export default function FastPassGrid({ products }: FastPassGridProps) {
 
         {/* Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-          {TIERS.map((tierInfo, i) => {
-            const product = products[i] ?? null;
+          {TIERS.map((tierInfo) => {
+            // Match product by tier name in title (e.g. "BLACK Fast Pass" or "Fast Pass BLACK")
+            const tierLower = tierInfo.tier.toLowerCase();
+            const product =
+              products.find((p) =>
+                p.title.toLowerCase().includes(tierLower)
+              ) ?? null;
             return (
               <FastPassCard
                 key={tierInfo.tier}
                 tierInfo={tierInfo}
                 product={product}
+                multiplier={multiplier}
               />
             );
           })}
@@ -62,11 +78,20 @@ export default function FastPassGrid({ products }: FastPassGridProps) {
 interface FastPassCardProps {
   tierInfo: FastPassTier;
   product: CartPandaProduct | null;
+  multiplier?: number;
 }
 
-function FastPassCard({ tierInfo, product }: FastPassCardProps) {
-  const price = product?.variants?.[0]?.price ?? null;
+function FastPassCard({ tierInfo, product, multiplier = 200 }: FastPassCardProps) {
+  const price = product?.variants?.[0]?.price ?? 0;
+  const sku = product?.variants?.[0]?.sku;
   const variantId = product?.variants?.[0]?.id ?? null;
+  // Use SKU override (pure integer) if set, otherwise fall back to tier's hardcoded entries
+  const skuEntries = sku ? parseInt(sku, 10) : NaN;
+  const dynamicEntries = !isNaN(skuEntries) && skuEntries > 0 && String(skuEntries) === sku?.trim()
+    ? skuEntries
+    : price > 0
+      ? calcProductEntries(price, multiplier, null)
+      : null;
   const image = product?.images?.[0]?.src ?? null;
   const title = product?.title ?? `${tierInfo.tier} Fast Pass`;
   const handle = product?.handle ?? "#";
@@ -117,9 +142,9 @@ function FastPassCard({ tierInfo, product }: FastPassCardProps) {
       </p>
 
       {/* Price */}
-      {price && (
+      {price > 0 && (
         <p className="text-base font-bold mb-4" style={{ color: "#1a1a1a" }}>
-          {formatPrice(parseFloat(price))}
+          {formatPrice(price)}
         </p>
       )}
 

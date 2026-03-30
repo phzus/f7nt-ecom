@@ -4,7 +4,7 @@
 
 import { useState, useCallback } from "react";
 import type { CartPandaProduct, CartPandaVariant } from "@/types/cartpanda";
-import { formatPrice, formatEntries } from "@/lib/utils";
+import { formatPrice, formatEntries, sanitizeHtml, calcProductEntries } from "@/lib/utils";
 import VariantSelector from "./VariantSelector";
 import AddToCartButton from "./AddToCartButton";
 
@@ -22,13 +22,13 @@ export default function ProductInfo({ product, multiplier }: ProductInfoProps) {
     (v) => v.id === selectedVariantId
   );
 
-  const price = parseFloat(selectedVariant?.price ?? "0");
-  const comparePrice = selectedVariant?.compare_at_price
-    ? parseFloat(selectedVariant.compare_at_price)
-    : null;
-  const isOnSale = comparePrice !== null && comparePrice > price;
+  const price = selectedVariant?.price ?? 0;
+  const comparePrice = selectedVariant?.compare_at_price ?? 0;
+  const isOnSale = comparePrice > 0 && comparePrice > price;
   const isAvailable = selectedVariant?.available !== false;
-  const entries = Math.floor(price * quantity) * multiplier;
+  const sku = selectedVariant?.sku;
+  // Use SKU override if present (pure integer = custom entries count), else price × multiplier
+  const entries = calcProductEntries(price * quantity, multiplier, sku);
 
   const handleVariantChange = useCallback((variantId: number) => {
     setSelectedVariantId(variantId);
@@ -54,7 +54,7 @@ export default function ProductInfo({ product, multiplier }: ProductInfoProps) {
   return (
     <div className="flex flex-col gap-5">
       {/* Vendor */}
-      {product.vendor && (
+      {product.vendor && product.vendor !== 'undefined' && product.vendor !== 'Undefined' && (
         <p className="text-xs" style={{ color: "rgba(26,26,26,0.75)", fontSize: "10px" }}>
           {product.vendor}
         </p>
@@ -73,7 +73,7 @@ export default function ProductInfo({ product, multiplier }: ProductInfoProps) {
         <span className="text-2xl font-bold" style={{ color: "#1a1a1a" }}>
           {formatPrice(price)}
         </span>
-        {isOnSale && comparePrice && (
+        {isOnSale && (
           <span className="text-lg line-through" style={{ color: "rgba(26,26,26,0.5)" }}>
             {formatPrice(comparePrice)}
           </span>
@@ -167,7 +167,7 @@ export default function ProductInfo({ product, multiplier }: ProductInfoProps) {
         <div
           className="prose prose-sm max-w-none mt-4 pt-4 border-t"
           style={{ borderColor: "#f0f0f0", color: "rgba(26,26,26,0.75)" }}
-          dangerouslySetInnerHTML={{ __html: product.body_html }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.body_html) }}
         />
       )}
     </div>

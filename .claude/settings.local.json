@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(find c:UsersphmorDocumentsProgramaçãof7nt-ecom -not -path */.git/* -not -path */node_modules/*)",
-      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --no-turbopack --yes)",
-      "Bash(mv prompt-claude-code-f7nt.md /tmp/prompt-claude-code-f7nt.md)"
-    ]
-  }
-}

@@ -6,10 +6,10 @@ export default function MysteryBanner() {
     <section className="w-full py-0" style={{ backgroundColor: "#000" }}>
       <div className="container-main">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-5" style={{ padding: "40px 0" }}>
-          {/* Image */}
+          {/* Image — use mystery-box.png when available, fallback to placeholder */}
           <div className="relative w-full" style={{ aspectRatio: "1/1", maxHeight: "400px" }}>
             <Image
-              src="/images/car-1.png"
+              src="/images/mystery-box.png"
               alt="Mystery Cash Box"
               fill
               className="object-contain"
@@ -20,7 +20,7 @@ export default function MysteryBanner() {
           {/* Text */}
           <div className="flex flex-col gap-5 px-4 md:px-8">
             <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#8e8e8e" }}>
-              MYSTERY BOXES
+              LIMITED EDITION
             </p>
             <h2
               className="text-4xl md:text-5xl font-black leading-tight"
@@ -28,9 +28,17 @@ export default function MysteryBanner() {
             >
               MYSTERY<br />CASH BOXES
             </h2>
+            <p className="text-base leading-relaxed font-bold" style={{ color: "rgba(255,255,255,0.9)" }}>
+              LOADED WITH MYSTERY APPAREL &amp; ACCESSORIES!
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🏆</span>
+              <span className="text-sm font-bold uppercase tracking-wide" style={{ color: "#00ff00" }}>
+                LUCKIEST PRODUCT
+              </span>
+            </div>
             <p className="text-base leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>
-              Open a mystery box for a chance to win instant cash prizes.
-              Each box contains a guaranteed payout — the bigger the box, the bigger the prize.
+              MORE THAN 30 WINNERS BOUGHT ONE!
             </p>
             <Link
               href="/catalog"

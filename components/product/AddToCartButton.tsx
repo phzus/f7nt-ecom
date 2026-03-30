@@ -39,7 +39,7 @@ export default function AddToCartButton({
       quantity,
       title: product.title,
       variantTitle: variant?.title ?? null,
-      price: parseFloat(variant?.price ?? "0"),
+      price: variant?.price ?? 0,
       image,
       handle: product.handle,
     });

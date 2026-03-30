@@ -2,11 +2,7 @@
 
 "use client";
 
-import type { Metadata } from "next";
 import { useState, type FormEvent } from "react";
-
-// Note: metadata export not compatible with "use client" — handled via generateMetadata
-// For simplicity, this page uses a client form but metadata is static
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
@@ -16,12 +12,22 @@ export default function ContactPage() {
     e.preventDefault();
     setStatus("sending");
 
-    // Simple mailto fallback — replace with actual form backend if available
     try {
-      await new Promise((r) => setTimeout(r, 1000));
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { error?: string }).error ?? "Request failed");
+      }
+
       setStatus("sent");
       setForm({ name: "", email: "", subject: "", message: "" });
-    } catch {
+    } catch (err) {
+      console.error("[contact form]", err);
       setStatus("error");
     }
   };

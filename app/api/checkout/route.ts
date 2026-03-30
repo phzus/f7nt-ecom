@@ -1,5 +1,6 @@
 // API Route: POST /api/checkout
-// Proxies checkout creation to CartPanda (keeps API token server-side)
+// Builds a CartPanda checkout URL from line items.
+// CartPanda checkout format: /checkout/{variantId}:{qty},{variantId}:{qty},...
 
 import { NextRequest, NextResponse } from "next/server";
 import type { CartPandaLineItem } from "@/types/cartpanda";
@@ -16,69 +17,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const token = process.env.CARTPANDA_API_TOKEN;
-    const domain = process.env.CARTPANDA_STORE_DOMAIN;
+    const storeUrl =
+      process.env.NEXT_PUBLIC_CARTPANDA_STORE_URL ?? "";
 
-    if (!token || !domain) {
+    if (!storeUrl) {
       return NextResponse.json(
-        { error: "Store not configured" },
+        { error: "Store URL not configured" },
         { status: 500 }
       );
     }
 
-    const apiUrl = `https://${domain}/api/v3/checkouts`;
+    // CartPanda checkout URL format:
+    // https://{store}/checkout/{variantId}:{qty},{variantId}:{qty}
+    const items = lineItems
+      .map((item) => `${item.variant_id}:${item.quantity}`)
+      .join(",");
 
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        checkout: {
-          line_items: lineItems.map((item) => ({
-            variant_id: item.variant_id,
-            quantity: item.quantity,
-          })),
-        },
-      }),
-    });
+    const checkout_url = `${storeUrl}/checkout/${items}`;
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error("CartPanda checkout error:", response.status, errorData);
-
-      // Fallback: build direct cart URL
-      const fallbackUrl = buildFallbackUrl(domain, lineItems);
-      return NextResponse.json({ checkout_url: fallbackUrl });
-    }
-
-    const data = await response.json();
-    const checkoutUrl =
-      data?.checkout?.checkout_url ??
-      data?.checkout_url ??
-      data?.web_url ??
-      buildFallbackUrl(domain, lineItems);
-
-    return NextResponse.json({ checkout_url: checkoutUrl });
+    return NextResponse.json({ checkout_url });
   } catch (error) {
-    console.error("Checkout API error:", error);
+    console.error("Checkout route error:", error);
     return NextResponse.json(
-      { error: "Failed to create checkout" },
+      { error: "Failed to build checkout URL" },
       { status: 500 }
     );
   }
-}
-
-function buildFallbackUrl(domain: string, lineItems: CartPandaLineItem[]): string {
-  const base = domain.startsWith("http") ? domain : `https://${domain}`;
-  // CartPanda supports cart/add with multiple items
-  const params = lineItems
-    .map(
-      (item, i) =>
-        `items[${i}][id]=${item.variant_id}&items[${i}][quantity]=${item.quantity}`
-    )
-    .join("&");
-  return `${base}/cart?${params}`;
 }

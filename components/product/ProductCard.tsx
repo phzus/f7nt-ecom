@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { CartPandaProduct } from "@/types/cartpanda";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, calcProductEntries } from "@/lib/utils";
 import AddToCartButton from "./AddToCartButton";
 
 interface ProductCardProps {
@@ -15,12 +15,13 @@ export default function ProductCard({
   multiplier = 200,
   showEntries = false,
 }: ProductCardProps) {
-  const price = product.variants?.[0]?.price ?? "0";
-  const comparePrice = product.variants?.[0]?.compare_at_price;
+  const price = product.variants?.[0]?.price ?? 0;
+  const comparePrice = product.variants?.[0]?.compare_at_price ?? 0;
   const variantId = product.variants?.[0]?.id;
   const image = product.images?.[0]?.src;
-  const isOnSale = comparePrice && parseFloat(comparePrice) > parseFloat(price);
-  const entries = Math.floor(parseFloat(price)) * multiplier;
+  const isOnSale = comparePrice > 0 && comparePrice > price;
+  const sku = product.variants?.[0]?.sku;
+  const entries = calcProductEntries(price, multiplier, sku);
 
   return (
     <article className="card-product group">
@@ -61,7 +62,7 @@ export default function ProductCard({
 
       {/* Info */}
       <div className="p-2.5 pb-4 bg-black">
-        {product.vendor && (
+        {product.vendor && product.vendor !== 'undefined' && product.vendor !== 'Undefined' && (
           <p className="text-xs mb-1" style={{ color: "rgba(255,255,255,0.5)", fontSize: "10px" }}>
             {product.vendor}
           </p>
@@ -75,10 +76,10 @@ export default function ProductCard({
           </h3>
         </Link>
         <div className="flex items-center gap-2 mb-3">
-          <span className="font-bold text-white">{formatPrice(parseFloat(price))}</span>
-          {isOnSale && comparePrice && (
+          <span className="font-bold text-white">{formatPrice(price)}</span>
+          {isOnSale && (
             <span className="line-through text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
-              {formatPrice(parseFloat(comparePrice))}
+              {formatPrice(comparePrice)}
             </span>
           )}
         </div>

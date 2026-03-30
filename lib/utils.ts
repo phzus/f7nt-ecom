@@ -3,25 +3,26 @@
 
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import DOMPurify from "isomorphic-dompurify";
 
 // ── Tailwind class merger ──────────────────────────────────────
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 
-// ── Money / Price formatting ─────────────────────────────────
-// Equivalent to Liquid: {{ price | money }}
-export function formatPrice(
-  price: number | string,
-  currency = "USD"
-): string {
-  const amount = typeof price === "string" ? parseFloat(price) : price;
-  if (isNaN(amount)) return "$0.00";
+// ── HTML sanitization ─────────────────────────────────────────
+// Strips XSS vectors from CartPanda body_html before dangerouslySetInnerHTML
+export function sanitizeHtml(dirty: string): string {
+  return DOMPurify.sanitize(dirty);
+}
 
+// ── Money / Price formatting ─────────────────────────────────
+// Prices from CartPanda API come as plain numbers (e.g. 9.90 = $9.90)
+export function formatPrice(amount: number): string {
+  if (isNaN(amount)) return "$0.00";
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency,
-    minimumFractionDigits: 2,
+    currency: "USD",
   }).format(amount);
 }
 
@@ -33,6 +34,30 @@ export function calcEntries(cartTotal: number, multiplier: number): number {
 
 export function formatEntries(entries: number): string {
   return entries.toLocaleString("en-US");
+}
+
+/**
+ * Get entries for a product variant.
+ * Priority:
+ *  1. If variant.sku is a plain integer string (e.g. "100000"), use it as a fixed entries override.
+ *     This lets you hardcode entries per product in CartPanda's SKU field, since CartPanda has no metafields.
+ *  2. Otherwise, fall back to price × multiplier.
+ *
+ * Example SKU values:  "100000" → 100,000 entries
+ *                      "FP-BLACK-001" → ignored, uses price × multiplier
+ */
+export function calcProductEntries(
+  price: number,
+  multiplier: number,
+  sku?: string | null
+): number {
+  if (sku) {
+    const skuEntries = parseInt(sku, 10);
+    if (!isNaN(skuEntries) && skuEntries > 0 && String(skuEntries) === sku.trim()) {
+      return skuEntries;
+    }
+  }
+  return Math.floor(price) * multiplier;
 }
 
 // ── String utilities ─────────────────────────────────────────

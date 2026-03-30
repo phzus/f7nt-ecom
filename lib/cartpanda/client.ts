@@ -1,53 +1,32 @@
 // CartPanda API v3 HTTP Client
-// Migrado de: Shopify Storefront API calls (cart.js, product-info.js)
 
-const BASE_URL = `https://${process.env.CARTPANDA_STORE_DOMAIN}/api/v3`;
-const TOKEN = process.env.CARTPANDA_API_TOKEN;
+const BASE_URL = `${process.env.CARTPANDA_BASE_URL}/${process.env.CARTPANDA_STORE_SLUG}`;
 
-interface FetchOptions extends RequestInit {
-  revalidate?: number;
-}
+const defaultHeaders = {
+  Authorization: `Bearer ${process.env.CARTPANDA_API_TOKEN}`,
+  "Content-Type": "application/json",
+};
 
-export async function cartpandaFetch<T>(
-  endpoint: string,
-  options: FetchOptions = {}
+export async function cartpandaFetch<T = unknown>(
+  path: string,
+  options: RequestInit & { revalidate?: number } = {}
 ): Promise<T> {
-  const { revalidate, ...fetchOptions } = options;
-
-  if (!TOKEN) {
-    throw new Error("CARTPANDA_API_TOKEN is not configured");
-  }
-
-  const url = `${BASE_URL}${endpoint}`;
-
-  const response = await fetch(url, {
+  const { revalidate = 3600, ...fetchOptions } = options;
+  const res = await fetch(`${BASE_URL}${path}`, {
     ...fetchOptions,
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      Authorization: `Bearer ${TOKEN}`,
-      ...fetchOptions.headers,
-    },
-    next: revalidate !== undefined ? { revalidate } : undefined,
+    headers: { ...defaultHeaders, ...(fetchOptions.headers ?? {}) },
+    next: { revalidate },
   });
 
-  if (!response.ok) {
-    let errorBody: unknown;
-    try {
-      errorBody = await response.json();
-    } catch {
-      errorBody = await response.text();
-    }
-    throw new CartPandaError(
-      `CartPanda API error ${response.status}: ${response.statusText}`,
-      response.status,
-      errorBody
-    );
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`CartPanda API error ${res.status}: ${text}`);
   }
 
-  return response.json() as Promise<T>;
+  return res.json();
 }
 
+// Keep CartPandaError for checkout.ts compatibility
 export class CartPandaError extends Error {
   constructor(
     message: string,

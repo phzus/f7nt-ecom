@@ -1,22 +1,16 @@
-// CartPanda API v3 TypeScript Types
-// Reference: https://dev.cartpanda.com/docs/api-v3
+// CartPanda API v3 TypeScript Types — schema validado contra API real
 
 export interface CartPandaImage {
   id: number;
   product_id: number;
   position: number;
+  alt: string;
+  /** Relative path — use `url` for absolute URL */
   src: string;
+  /** Full absolute URL — always prefer this over `src` */
+  url: string;
   width: number;
   height: number;
-  alt: string | null;
-  variant_ids: number[];
-}
-
-export interface CartPandaOptionValue {
-  id: number;
-  name: string;
-  position: number;
-  option_id: number;
 }
 
 export interface CartPandaOption {
@@ -27,81 +21,71 @@ export interface CartPandaOption {
   values: string[];
 }
 
-export interface CartPandaVariant {
+/** Raw variant as returned by the CartPanda API */
+export interface CartPandaVariantRaw {
   id: number;
   product_id: number;
+  default: number;
   title: string;
-  price: string;
-  compare_at_price: string | null;
+  price: number;
+  compare_at_price: number;
   sku: string;
+  quantity: number;
+  prevent_out_of_stock_selling: number;
+  checkout_link: string;
+  image_id: number | null;
   position: number;
-  inventory_quantity: number;
-  inventory_management: string | null;
-  inventory_policy: string;
+}
+
+/** Normalized variant — after enrichProduct(), has computed fields added */
+export interface CartPandaVariant extends CartPandaVariantRaw {
+  /** Computed: true if selling is allowed (prevent=0) or has stock */
+  available: boolean;
+  /** Mapped from variant title for VariantSelector compatibility */
   option1: string | null;
   option2: string | null;
   option3: string | null;
-  image_id: number | null;
-  available: boolean;
-  weight: number;
-  weight_unit: string;
 }
 
 export interface CartPandaProduct {
   id: number;
   title: string;
-  handle: string;
   body_html: string;
+  handle: string;
+  product_url: string;
   vendor: string;
   product_type: string;
   tags: string[];
-  status: "active" | "draft" | "archived";
+  status: "active" | "inactive";
   published_at: string | null;
   created_at: string;
   updated_at: string;
   images: CartPandaImage[];
   variants: CartPandaVariant[];
   options: CartPandaOption[];
-  // Computed
+  /** Present when variants array is empty (single-variant products) */
+  product_default_variant?: CartPandaVariantRaw;
+  seo_title: string;
+  seo_description: string;
+  // Computed by enrichProduct()
   price_min?: number;
   price_max?: number;
   available?: boolean;
   featured_image?: CartPandaImage | null;
 }
 
-export interface CartPandaProductsResponse {
-  products: CartPandaProduct[];
-  total?: number;
-  page?: number;
-  limit?: number;
-}
-
-export interface CartPandaSingleProductResponse {
-  product: CartPandaProduct;
-}
-
-export interface CartPandaCollection {
-  id: number;
-  handle: string;
-  title: string;
-  description: string;
-  published_at: string | null;
-  updated_at: string;
-  image: CartPandaImage | null;
-  products_count: number;
-}
-
-export interface CartPandaCollectionsResponse {
-  collections: CartPandaCollection[];
+// Kept for checkout.ts and CartDrawer compatibility
+export interface CartPandaLineItem {
+  variant_id: number;
+  quantity: number;
+  title?: string;
+  price?: string;
+  variant_title?: string;
 }
 
 export interface CartPandaCheckoutLineItem {
   variant_id: number;
   quantity: number;
-}
-
-export interface CartPandaCheckoutInput {
-  line_items: CartPandaLineItem[];
 }
 
 export interface CartPandaCheckout {
@@ -112,16 +96,6 @@ export interface CartPandaCheckout {
   subtotal_price: string;
   total_price: string;
   line_items: CartPandaLineItem[];
-}
-
-export interface CartPandaLineItem {
-  variant_id: number;
-  quantity: number;
-  title?: string;
-  price?: string;
-  variant_title?: string;
-  product?: CartPandaProduct;
-  variant?: CartPandaVariant;
 }
 
 export interface CartPandaApiError {
@@ -137,7 +111,7 @@ export interface LocalCartItem {
   quantity: number;
   title: string;
   variantTitle: string | null;
-  price: number; // in cents or decimal
+  price: number;
   image: string | null;
   handle: string;
 }

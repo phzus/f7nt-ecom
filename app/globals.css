@@ -68,7 +68,8 @@
 
   /* ── Badges ── */
   .badge-shimmer {
-    @apply relative overflow-hidden;
+    @apply relative overflow-hidden inline-block;
+    /* overflow:hidden só funciona em block/inline-block — nunca em inline puro */
   }
 
   .badge-shimmer::after {

@@ -19,12 +19,17 @@ export const metadata: Metadata = {
     "Shop f7nt.co and automatically earn entries to win a 2026 Limited BMW M4 Cummins + $10,000 cash. Every $1 spent = 200 entries.",
 };
 
-export const revalidate = 3600; // ISR: revalidate every 1 hour
+export const revalidate = 300; // ISR: revalidate every 5 minutes
+
+// Helper: hide internal upsell/funnel products from public pages
+const isUpsellProduct = (title: string) => /\[(UP\d+|F\d*)\]/i.test(title);
 
 async function getHomeProducts() {
   try {
     const allProducts = await getProducts({ limit: 20 });
-    return allProducts.map(enrichProduct);
+    return allProducts
+      .filter((p) => !isUpsellProduct(p.title))
+      .map(enrichProduct);
   } catch {
     return [];
   }
@@ -51,10 +56,10 @@ export default async function HomePage() {
     )
     .slice(0, 4);
 
-  // General catalog products
-  const generalProducts = products
-    .filter((p) => !fastPassProducts.includes(p))
-    .slice(0, 8);
+  // General catalog products — split into two grids (Shopify order)
+  const generalProducts = products.filter((p) => !fastPassProducts.includes(p));
+  const newReleases = generalProducts.slice(0, 4);   // first 4 → NEW RELEASES
+  const apparel = generalProducts.slice(4, 8);        // next 4  → APPAREL
 
   return (
     <>
@@ -68,28 +73,38 @@ export default async function HomePage() {
       <CountdownTimer />
 
       {/* 4. Fast Pass Tiers */}
-      <FastPassGrid products={fastPassProducts} />
+      <FastPassGrid products={fastPassProducts} multiplier={multiplier} />
 
       {/* 5. Mystery Cash Boxes */}
       <MysteryBanner />
 
-      {/* 6. Giveaway / Prize Section */}
-      <GiveawaySection />
-
-      {/* 7. Featured Apparel/Products */}
-      {generalProducts.length > 0 && (
+      {/* 6. NEW RELEASES grid */}
+      {newReleases.length > 0 && (
         <FeaturedProducts
-          products={generalProducts}
-          title="NEW ARRIVALS"
-          eyebrow="JUST-IN"
+          products={newReleases}
+          title="NEW RELEASES"
+          eyebrow="NEW RELEASES"
           multiplier={multiplier}
         />
       )}
 
-      {/* 8. Testimonials */}
+      {/* 7. Giveaway / BMW Prize Section */}
+      <GiveawaySection />
+
+      {/* 8. APPAREL grid */}
+      {apparel.length > 0 && (
+        <FeaturedProducts
+          products={apparel}
+          title="APPAREL"
+          eyebrow="APPAREL"
+          multiplier={multiplier}
+        />
+      )}
+
+      {/* 9. Testimonials */}
       <TestimonialsSection />
 
-      {/* 9. FAQ */}
+      {/* 10. FAQ */}
       <FaqSection />
     </>
   );

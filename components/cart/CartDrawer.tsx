@@ -2,7 +2,7 @@
 // Migrado de: /snippets/cart-drawer.liquid
 // Slide-out drawer with real-time entries calculation
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { X, ShoppingBag, Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/lib/cart-store";
@@ -23,6 +23,7 @@ export default function CartDrawer() {
   } = useCart();
 
   const drawerRef = useRef<HTMLDivElement>(null);
+  const [checkoutState, setCheckoutState] = useState<"idle" | "loading" | "error">("idle");
 
   // Close on Escape key
   useEffect(() => {
@@ -41,6 +42,7 @@ export default function CartDrawer() {
 
   const handleCheckout = async () => {
     if (items.length === 0) return;
+    setCheckoutState("loading");
 
     try {
       const response = await fetch("/api/checkout", {
@@ -54,12 +56,23 @@ export default function CartDrawer() {
         }),
       });
 
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
       const data = await response.json();
       if (data.checkout_url) {
         window.location.href = data.checkout_url;
+        return;
       }
+      throw new Error("No checkout_url returned");
     } catch {
-      console.error("Checkout failed");
+      // Fallback: redirect directly to CartPanda (equivalent to buildDirectBuyUrl)
+      const storeUrl = process.env.NEXT_PUBLIC_CARTPANDA_STORE_URL;
+      const firstItem = items[0];
+      if (storeUrl && firstItem) {
+        window.location.href = `${storeUrl}/cart/add?id=${firstItem.variantId}&quantity=${firstItem.quantity}`;
+        return;
+      }
+      setCheckoutState("error");
     }
   };
 
@@ -179,13 +192,34 @@ export default function CartDrawer() {
 
             <button
               onClick={handleCheckout}
-              className="w-full py-4 text-white font-bold uppercase tracking-wider rounded transition-colors"
+              disabled={checkoutState === "loading"}
+              className="w-full py-4 text-white font-bold uppercase tracking-wider rounded transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               style={{ backgroundColor: "#000", letterSpacing: "1px" }}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#333")}
+              onMouseOver={(e) => {
+                if (checkoutState !== "loading") e.currentTarget.style.backgroundColor = "#333";
+              }}
               onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#000")}
             >
-              Checkout — {formatPrice(totalPrice)}
+              {checkoutState === "loading"
+                ? "Processing..."
+                : `Checkout — ${formatPrice(totalPrice)}`}
             </button>
+
+            {checkoutState === "error" && (
+              <p className="text-red-600 text-sm text-center mt-2">
+                Checkout failed. Please{" "}
+                <button
+                  onClick={() => setCheckoutState("idle")}
+                  className="underline font-medium"
+                >
+                  try again
+                </button>{" "}
+                or contact{" "}
+                <a href="mailto:support@f7nt.co" className="underline font-medium">
+                  support@f7nt.co
+                </a>
+              </p>
+            )}
           </div>
         )}
       </div>

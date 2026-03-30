@@ -19,10 +19,16 @@ export default async function CatalogPage() {
     10
   );
 
+  // Helper: hide internal upsell/funnel products from public catalog
+  const isUpsellProduct = (title: string) =>
+    /\[(UP\d+|F\d*)\]/i.test(title);
+
   let products: ReturnType<typeof enrichProduct>[] = [];
   try {
     const raw = await getProducts({ limit: 50 });
-    products = raw.map(enrichProduct);
+    products = raw
+      .filter((p) => !isUpsellProduct(p.title))
+      .map(enrichProduct);
   } catch {
     products = [];
   }
