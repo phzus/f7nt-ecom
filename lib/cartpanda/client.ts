@@ -9,21 +9,34 @@ const defaultHeaders = {
 
 export async function cartpandaFetch<T = unknown>(
   path: string,
-  options: RequestInit & { revalidate?: number } = {}
+  options: RequestInit & { revalidate?: number; timeoutMs?: number } = {}
 ): Promise<T> {
-  const { revalidate = 3600, ...fetchOptions } = options;
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...fetchOptions,
-    headers: { ...defaultHeaders, ...(fetchOptions.headers ?? {}) },
-    next: { revalidate },
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`CartPanda API error ${res.status}: ${text}`);
+  if (!process.env.CARTPANDA_BASE_URL || !process.env.CARTPANDA_STORE_SLUG || !process.env.CARTPANDA_API_TOKEN) {
+    throw new Error("CartPanda env vars not configured");
   }
 
-  return res.json();
+  const { revalidate = 3600, timeoutMs = 10000, ...fetchOptions } = options;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(`${BASE_URL}${path}`, {
+      ...fetchOptions,
+      headers: { ...defaultHeaders, ...(fetchOptions.headers ?? {}) },
+      next: { revalidate },
+      signal: controller.signal,
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`CartPanda API error ${res.status}: ${text}`);
+    }
+
+    return res.json();
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 // Keep CartPandaError for checkout.ts compatibility
