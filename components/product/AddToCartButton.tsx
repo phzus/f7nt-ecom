@@ -11,6 +11,8 @@ interface AddToCartButtonProps {
   quantity?: number;
   className?: string;
   label?: string;
+  variant?: "primary" | "outline";
+  showIcon?: boolean;
 }
 
 export default function AddToCartButton({
@@ -19,12 +21,14 @@ export default function AddToCartButton({
   quantity = 1,
   className,
   label = "ADD TO CART",
+  variant = "primary",
+  showIcon = true,
 }: AddToCartButtonProps) {
   const [state, setState] = useState<"idle" | "loading" | "added">("idle");
   const { addItem, openCart } = useCart();
 
-  const variant = product.variants.find((v) => v.id === variantId);
-  const isAvailable = variant?.available !== false;
+  const selectedVariant = product.variants.find((v) => v.id === variantId);
+  const isAvailable = selectedVariant?.available !== false;
 
   const handleAdd = async () => {
     if (!isAvailable || state !== "idle") return;
@@ -38,8 +42,8 @@ export default function AddToCartButton({
       productId: product.id,
       quantity,
       title: product.title,
-      variantTitle: variant?.title ?? null,
-      price: variant?.price ?? 0,
+      variantTitle: selectedVariant?.title ?? null,
+      price: selectedVariant?.price ?? 0,
       image,
       handle: product.handle,
     });
@@ -50,11 +54,13 @@ export default function AddToCartButton({
     setTimeout(() => setState("idle"), 2000);
   };
 
+  const baseClass = variant === "outline" ? "btn-outline" : "btn-primary";
+
   if (!isAvailable) {
     return (
       <button
         disabled
-        className={cn("btn-primary opacity-50 cursor-not-allowed", className)}
+        className={cn(baseClass, "opacity-50 cursor-not-allowed", className)}
       >
         SOLD OUT
       </button>
@@ -66,8 +72,10 @@ export default function AddToCartButton({
       onClick={handleAdd}
       disabled={state === "loading"}
       className={cn(
-        "btn-primary flex items-center justify-center gap-2 transition-all",
-        state === "added" && "bg-green-600 hover:bg-green-700",
+        baseClass,
+        "flex items-center justify-center gap-2 transition-all",
+        state === "added" && variant === "primary" && "bg-green-600 hover:bg-green-700",
+        state === "added" && variant === "outline" && "border-green-600 text-green-600",
         state === "loading" && "opacity-70 cursor-wait",
         className
       )}
@@ -75,12 +83,12 @@ export default function AddToCartButton({
     >
       {state === "added" ? (
         <>
-          <Check size={14} />
+          {showIcon && <Check size={14} />}
           ADDED!
         </>
       ) : (
         <>
-          <ShoppingCart size={14} />
+          {showIcon && <ShoppingCart size={14} />}
           {state === "loading" ? "ADDING..." : label}
         </>
       )}

@@ -56,10 +56,44 @@ export default async function HomePage() {
     )
     .slice(0, 4);
 
-  // General catalog products — split into two grids (Shopify order)
-  const generalProducts = products.filter((p) => !fastPassProducts.includes(p));
-  const newReleases = generalProducts.slice(0, 4);   // first 4 → NEW RELEASES
-  const apparel = generalProducts.slice(4, 8);        // next 4  → APPAREL
+  const nonFastPass = products.filter((p) => !fastPassProducts.includes(p));
+
+  // NEW RELEASES — first 4 non-fastpass products
+  const newReleases = nonFastPass.slice(0, 4);
+
+  // Caps / headwear
+  const isCap = (p: (typeof products)[0]) => {
+    const t = p.title.toLowerCase();
+    const type = (p.product_type ?? "").toLowerCase();
+    return (
+      t.includes("cap") ||
+      t.includes("hat") ||
+      t.includes("trucker") ||
+      type.includes("cap") ||
+      type.includes("hat") ||
+      p.tags?.some((tag) => ["cap", "hat", "headwear"].includes(tag.toLowerCase()))
+    );
+  };
+
+  // T-shirts / apparel
+  const isTshirt = (p: (typeof products)[0]) => {
+    const t = p.title.toLowerCase();
+    const type = (p.product_type ?? "").toLowerCase();
+    return (
+      t.includes("t-shirt") ||
+      t.includes("tshirt") ||
+      t.includes("shirt") ||
+      t.includes("hoodie") ||
+      type.includes("shirt") ||
+      type.includes("apparel") ||
+      p.tags?.some((tag) =>
+        ["shirt", "t-shirt", "apparel", "tshirt"].includes(tag.toLowerCase())
+      )
+    );
+  };
+
+  const capProducts     = nonFastPass.filter(isCap).slice(0, 3);
+  const apparelProducts = nonFastPass.filter(isTshirt).slice(0, 3);
 
   return (
     <>
@@ -83,7 +117,7 @@ export default async function HomePage() {
         <FeaturedProducts
           products={newReleases}
           title="NEW RELEASES"
-          eyebrow="NEW RELEASES"
+          eyebrow="JUST-IN"
           multiplier={multiplier}
         />
       )}
@@ -91,13 +125,25 @@ export default async function HomePage() {
       {/* 7. Giveaway / BMW Prize Section */}
       <GiveawaySection />
 
-      {/* 8. APPAREL grid */}
-      {apparel.length > 0 && (
+      {/* 8. Headwear grid */}
+      {capProducts.length > 0 && (
         <FeaturedProducts
-          products={apparel}
-          title="APPAREL"
+          products={capProducts}
+          title="LEGENDS WEAR CROWNS"
+          eyebrow="HEADWEAR"
+          multiplier={multiplier}
+          cols={3}
+        />
+      )}
+
+      {/* 9. Apparel / T-shirts grid */}
+      {apparelProducts.length > 0 && (
+        <FeaturedProducts
+          products={apparelProducts}
+          title="STREETWEAR ESSENTIALS"
           eyebrow="APPAREL"
           multiplier={multiplier}
+          cols={3}
         />
       )}
 

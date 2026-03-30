@@ -9,6 +9,8 @@ const MESSAGES = [
   "Final Days To Enter — Win This 2026 Limited BMW M4 Cummins + $10,000!",
 ];
 
+const longest = MESSAGES.reduce((a, b) => (b.length > a.length ? b : a));
+
 export default function AnnouncementBar() {
   const [current, setCurrent] = useState(0);
   const [visible, setVisible] = useState(true);
@@ -36,40 +38,51 @@ export default function AnnouncementBar() {
 
   return (
     <div
-      className="w-full flex items-center justify-center gap-3 px-4"
-      style={{
-        backgroundColor: "#ae0303",
-        minHeight: "39.4px",
-        fontSize: "16px",
-        color: "#ffffff",
-      }}
+      className="w-full flex items-center justify-center"
+      style={{ backgroundColor: "#ae0303", color: "#ffffff" }}
     >
-      {MESSAGES.length > 1 && (
-        <button
-          onClick={prev}
-          aria-label="Previous announcement"
-          className="flex-shrink-0 opacity-75 hover:opacity-100 transition-opacity"
+      {/* ── Mobile layout ── */}
+      <div className="relative flex items-center w-full px-8 py-2 md:hidden" style={{ minHeight: "39.4px" }}>
+        {MESSAGES.length > 1 && (
+          <button onClick={prev} aria-label="Previous" className="absolute left-2 opacity-75">
+            <ChevronLeft size={14} />
+          </button>
+        )}
+        <p
+          className="w-full text-center font-normal transition-opacity duration-200"
+          style={{ fontSize: "11px", lineHeight: "110%", opacity: visible ? 1 : 0 }}
         >
-          <ChevronLeft size={16} />
-        </button>
-      )}
+          {MESSAGES[current]}
+        </p>
+        {MESSAGES.length > 1 && (
+          <button onClick={next} aria-label="Next" className="absolute right-2 opacity-75">
+            <ChevronRight size={14} />
+          </button>
+        )}
+      </div>
 
-      <p
-        className="text-center text-sm md:text-base font-normal transition-opacity duration-200"
-        style={{ opacity: visible ? 1 : 0 }}
-      >
-        {MESSAGES[current]}
-      </p>
-
-      {MESSAGES.length > 1 && (
-        <button
-          onClick={next}
-          aria-label="Next announcement"
-          className="flex-shrink-0 opacity-75 hover:opacity-100 transition-opacity"
+      {/* ── Desktop layout: ghost fixa largura do maior texto ── */}
+      <div className="relative hidden md:inline-flex items-center justify-center">
+        <span className="invisible text-sm font-normal px-6 whitespace-nowrap" aria-hidden>
+          {longest}
+        </span>
+        <p
+          className="absolute inset-0 flex items-center justify-center text-sm font-normal text-center whitespace-nowrap transition-opacity duration-200"
+          style={{ opacity: visible ? 1 : 0 }}
         >
-          <ChevronRight size={16} />
-        </button>
-      )}
+          {MESSAGES[current]}
+        </p>
+        {MESSAGES.length > 1 && (
+          <>
+            <button onClick={prev} aria-label="Previous" className="absolute -left-5 opacity-75 hover:opacity-100 transition-opacity">
+              <ChevronLeft size={16} />
+            </button>
+            <button onClick={next} aria-label="Next" className="absolute -right-5 opacity-75 hover:opacity-100 transition-opacity">
+              <ChevronRight size={16} />
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }

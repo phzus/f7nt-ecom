@@ -10,7 +10,7 @@ import {
 } from "@/lib/cartpanda/products";
 import ProductGallery from "@/components/product/ProductGallery";
 import ProductInfo from "@/components/product/ProductInfo";
-import ProductCard from "@/components/product/ProductCard";
+import ProductCarousel from "@/components/product/ProductCarousel";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -106,16 +106,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
             >
               You May Also Like
             </h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {relatedProducts.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  multiplier={multiplier}
-                  showEntries
-                />
-              ))}
-            </div>
+            <ProductCarousel
+              products={relatedProducts}
+              multiplier={multiplier}
+              desktopCols={4}
+            />
           </section>
         )}
       </div>

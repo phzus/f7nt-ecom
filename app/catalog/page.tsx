@@ -53,7 +53,7 @@ export default async function CatalogPage() {
         </p>
       </div>
 
-      <div className="container-main py-10">
+      <div className="container-main py-10 pb-20">
         {products.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-xl text-gray-500">

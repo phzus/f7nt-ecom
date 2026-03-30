@@ -64,7 +64,7 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   className="text-white font-normal transition-opacity hover:opacity-75"
-                  style={{ fontSize: "18px", letterSpacing: "0.6px" }}
+                  style={{ fontSize: "16px", letterSpacing: "0.6px" }}
                 >
                   {link.label}
                 </Link>

@@ -2,7 +2,7 @@
 // Shows apparel/general products grid
 
 import type { CartPandaProduct } from "@/types/cartpanda";
-import ProductCard from "@/components/product/ProductCard";
+import ProductCarousel from "@/components/product/ProductCarousel";
 import Link from "next/link";
 
 interface FeaturedProductsProps {
@@ -10,6 +10,7 @@ interface FeaturedProductsProps {
   title?: string;
   eyebrow?: string;
   multiplier?: number;
+  cols?: 3 | 4;
 }
 
 export default function FeaturedProducts({
@@ -17,40 +18,39 @@ export default function FeaturedProducts({
   title = "SHOP ALL",
   eyebrow = "APPAREL",
   multiplier = 200,
+  cols = 4,
 }: FeaturedProductsProps) {
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full py-14" style={{ backgroundColor: "#f2f2f2" }}>
+    <section className="w-full py-20" style={{ backgroundColor: "#f2f2f2" }}>
       <div className="container-main">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: "#8e8e8e" }}>
+            <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#8e8e8e" }}>
               {eyebrow}
             </p>
-            <h2 className="text-3xl md:text-5xl font-black" style={{ color: "#000", letterSpacing: "-0.02em" }}>
+            <h2
+              className="font-black"
+              style={{ color: "#000", letterSpacing: "-0.02em", fontSize: "clamp(1rem, 7vw, 2.5rem)", lineHeight: "130%" }}
+            >
               {title}
             </h2>
           </div>
           <Link
             href="/catalog"
-            className="text-sm font-bold uppercase tracking-wider underline underline-offset-4 transition-opacity hover:opacity-60"
+            className="text-sm font-bold uppercase tracking-wider underline underline-offset-4 transition-opacity hover:opacity-60 self-end mb-2 whitespace-nowrap"
             style={{ color: "#1a1a1a" }}
           >
             View All
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {products.slice(0, 8).map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              multiplier={multiplier}
-              showEntries
-            />
-          ))}
-        </div>
+        <ProductCarousel
+          products={products.slice(0, 8)}
+          multiplier={multiplier}
+          desktopCols={cols}
+        />
       </div>
     </section>
   );

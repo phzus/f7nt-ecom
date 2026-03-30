@@ -40,13 +40,13 @@ function StarRating({ rating }: { rating: number }) {
 
 export default function TestimonialsSection() {
   return (
-    <section className="w-full py-14" style={{ backgroundColor: "#fff" }}>
+    <section className="w-full py-20" style={{ backgroundColor: "#fff" }}>
       <div className="container-main">
         <div className="text-center mb-10">
           <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#8e8e8e" }}>
             REVIEWS
           </p>
-          <h2 className="text-3xl md:text-5xl font-black" style={{ color: "#000", letterSpacing: "-0.02em" }}>
+          <h2 className="font-black" style={{ color: "#000", letterSpacing: "-0.02em", fontSize: "clamp(1rem, 7vw, 2.5rem)", lineHeight: "130%" }}>
             WHAT PEOPLE SAY
           </h2>
         </div>

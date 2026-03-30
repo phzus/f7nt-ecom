@@ -47,7 +47,7 @@ export default function ContactPage() {
         </p>
       </div>
 
-      <div className="container-main py-12" style={{ maxWidth: "742px" }}>
+      <div className="container-main py-12 pb-20" style={{ maxWidth: "742px" }}>
         {status === "sent" ? (
           <div className="text-center py-12">
             <div className="text-5xl mb-4">✅</div>

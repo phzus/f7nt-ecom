@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Plus, Minus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 interface FaqItem {
   question: string;
@@ -38,57 +38,75 @@ export default function FaqSection() {
   };
 
   return (
-    <section className="w-full" style={{ padding: "54px 20px 86px", backgroundColor: "#f2f2f2" }}>
-      <div className="container-main" style={{ maxWidth: "800px" }}>
+    <section className="w-full py-20" style={{ backgroundColor: "#f2f2f2" }}>
+      <div className="container-main">
+        {/* Header */}
         <div className="text-center mb-12">
-          <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#555", letterSpacing: "1.4px" }}>
-            FAQ
+          <p
+            className="text-xs font-bold uppercase tracking-widest mb-3"
+            style={{ color: "#888", letterSpacing: "2px" }}
+          >
+            Frequently Asked Questions
           </p>
-          <h2 className="text-4xl md:text-5xl font-black" style={{ color: "#000", letterSpacing: "-0.02em" }}>
+          <h2
+            className="font-black text-black"
+            style={{ fontSize: "clamp(1rem, 7vw, 2.5rem)", letterSpacing: "-0.02em", lineHeight: "130%" }}
+          >
             THE ANSWERS YOU&apos;RE LOOKING FOR
           </h2>
         </div>
 
-        <div className="flex flex-col gap-4">
-          {FAQ_ITEMS.map((item, index) => (
-            <div key={index} className="faq-item">
-              <button
-                onClick={() => toggle(index)}
-                className="w-full flex items-center justify-between text-left px-8 py-6 transition-colors hover:bg-gray-50"
-                aria-expanded={openIndex === index}
-                aria-controls={`faq-answer-${index}`}
-              >
-                <span className="text-lg font-bold pr-4" style={{ color: "#000" }}>
-                  {item.question}
-                </span>
-                <span
-                  className="flex-shrink-0 transition-transform duration-300"
-                  style={{
-                    color: "#113320",
-                    transform: openIndex === index ? "rotate(45deg)" : "rotate(0deg)",
-                  }}
-                >
-                  <Plus size={20} />
-                </span>
-              </button>
-
+        {/* Accordion */}
+        <div className="flex flex-col gap-3 max-w-4xl mx-auto">
+          {FAQ_ITEMS.map((item, index) => {
+            const isOpen = openIndex === index;
+            return (
               <div
-                id={`faq-answer-${index}`}
-                className="overflow-hidden transition-all duration-300"
+                key={index}
+                className="overflow-hidden rounded"
                 style={{
-                  maxHeight: openIndex === index ? "500px" : "0",
-                  padding: openIndex === index ? "0 32px 24px" : "0 32px",
+                  backgroundColor: "#fff",
+                  border: "1px solid #e5e7eb",
                 }}
               >
-                <p className="text-sm leading-relaxed" style={{ color: "#4b5563", lineHeight: "1.6" }}>
-                  {item.answer}
-                </p>
+                <button
+                  onClick={() => toggle(index)}
+                  className={`w-full flex items-center justify-between text-left px-8 py-6 transition-colors ${isOpen ? "bg-gray-50" : "hover:bg-gray-50"}`}
+                  aria-expanded={isOpen}
+                >
+                  <span className="text-base font-bold pr-6" style={{ color: "#000" }}>
+                    {item.question}
+                  </span>
+                  <span
+                    className="flex-shrink-0 transition-transform duration-300"
+                    style={{
+                      color: "#000",
+                      transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
+                    }}
+                  >
+                    <Plus size={20} />
+                  </span>
+                </button>
+
+                <div
+                  className="overflow-hidden transition-all duration-300"
+                  style={{
+                    maxHeight: isOpen ? "500px" : "0",
+                  }}
+                >
+                  <p
+                    className="text-sm leading-relaxed px-8 pt-4 pb-7"
+                    style={{ color: "#4b5563", lineHeight: "1.7" }}
+                  >
+                    {item.answer}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        <div className="text-center mt-10">
+        <div className="text-center mt-10 max-w-4xl mx-auto">
           <p className="text-sm" style={{ color: "#555" }}>
             Still have questions?{" "}
             <a href="/contact" className="font-semibold underline" style={{ color: "#0000ff" }}>

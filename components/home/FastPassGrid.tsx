@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { CartPandaProduct } from "@/types/cartpanda";
-import { formatPrice, calcProductEntries } from "@/lib/utils";
 import AddToCartButton from "@/components/product/AddToCartButton";
 
 type Tier = "BLACK" | "PLATINUM" | "GOLD" | "BRONZE";
@@ -36,23 +35,10 @@ export default function FastPassGrid({ products, multiplier = 200 }: FastPassGri
   }
 
   return (
-    <section className="w-full py-14" style={{ backgroundColor: "#f5f5f5" }}>
+    <section className="w-full py-20" style={{ backgroundColor: "#f5f5f5" }}>
       <div className="container-main">
-        {/* Section header */}
-        <div className="text-center mb-10">
-          <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#8e8e8e" }}>
-            FAST PASS
-          </p>
-          <h2 className="text-3xl md:text-5xl font-black" style={{ color: "#000", letterSpacing: "-0.02em" }}>
-            ENTER TO WIN
-          </h2>
-          <p className="text-base mt-3" style={{ color: "rgba(26,26,26,0.75)" }}>
-            Choose your Fast Pass tier and instantly earn entries
-          </p>
-        </div>
-
         {/* Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {TIERS.map((tierInfo) => {
             // Match product by tier name in title (e.g. "BLACK Fast Pass" or "Fast Pass BLACK")
             const tierLower = tierInfo.tier.toLowerCase();
@@ -81,85 +67,68 @@ interface FastPassCardProps {
   multiplier?: number;
 }
 
-function FastPassCard({ tierInfo, product, multiplier = 200 }: FastPassCardProps) {
-  const price = product?.variants?.[0]?.price ?? 0;
-  const sku = product?.variants?.[0]?.sku;
+function FastPassCard({ tierInfo, product }: FastPassCardProps) {
   const variantId = product?.variants?.[0]?.id ?? null;
-  // Use SKU override (pure integer) if set, otherwise fall back to tier's hardcoded entries
-  const skuEntries = sku ? parseInt(sku, 10) : NaN;
-  const dynamicEntries = !isNaN(skuEntries) && skuEntries > 0 && String(skuEntries) === sku?.trim()
-    ? skuEntries
-    : price > 0
-      ? calcProductEntries(price, multiplier, null)
-      : null;
-  const image = product?.images?.[0]?.src ?? null;
-  const title = product?.title ?? `${tierInfo.tier} Fast Pass`;
-  const handle = product?.handle ?? "#";
+  const image     = product?.images?.[0]?.src ?? null;
+  const title     = product?.title ?? `${tierInfo.tier} Fast Pass`;
+  const handle    = product?.handle ?? "#";
 
   return (
-    <article className="card-fast-pass">
+    <article
+      className="flex flex-col bg-white rounded overflow-hidden"
+      style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.06)" }}
+    >
       {/* Image */}
-      <Link href={`/products/${handle}`} className="w-full mb-4">
-        <div
-          className="relative w-full rounded-lg overflow-hidden bg-gray-100"
-          style={{ aspectRatio: "1/1" }}
-        >
-          {image ? (
-            <Image
-              src={image}
-              alt={title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 50vw, 25vw"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-200">
-              <span className="text-4xl">🏎️</span>
-            </div>
-          )}
-        </div>
+      <Link href={`/products/${handle}`} className="block relative aspect-square bg-gray-100">
+        {image ? (
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 50vw, 25vw"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-200">
+            <span className="text-4xl">🏎️</span>
+          </div>
+        )}
       </Link>
 
-      {/* Badge */}
-      <div
-        className={`badge-shimmer px-4 py-2 rounded-full text-xs font-bold uppercase mb-3 ${tierInfo.badgeClass}`}
-        style={{ letterSpacing: "0.5px" }}
-      >
-        {tierInfo.entries} ENTRIES
+      {/* Content */}
+      <div className="flex flex-col flex-1 items-center text-center p-4 gap-3">
+        {/* Badge */}
+        <span
+          className={`badge-shimmer ${tierInfo.badgeClass} px-4 py-1.5 rounded-full text-xs font-bold uppercase whitespace-nowrap`}
+          style={{ letterSpacing: "0.5px" }}
+        >
+          {tierInfo.entries} ENTRIES
+        </span>
+
+        {/* Tier name */}
+        <h3
+          className="font-extrabold uppercase"
+          style={{ letterSpacing: "1.5px", color: "#000", fontSize: "16px" }}
+        >
+          {tierInfo.label}
+        </h3>
+
+        {/* ATC */}
+        <div className="mt-auto w-full pt-1">
+          {product && variantId ? (
+            <AddToCartButton
+              product={product}
+              variantId={variantId}
+              className="w-full"
+              showIcon={false}
+            />
+          ) : (
+            <button className="btn-primary w-full" disabled>
+              Coming Soon
+            </button>
+          )}
+        </div>
       </div>
-
-      {/* Title */}
-      <h3
-        className="text-sm font-extrabold uppercase mb-1"
-        style={{ letterSpacing: "1.5px", color: "#000" }}
-      >
-        {tierInfo.label}
-      </h3>
-
-      {/* Subtitle */}
-      <p className="text-xs mb-3" style={{ color: "#8e8e8e" }}>
-        {tierInfo.entries} entries included
-      </p>
-
-      {/* Price */}
-      {price > 0 && (
-        <p className="text-base font-bold mb-4" style={{ color: "#1a1a1a" }}>
-          {formatPrice(price)}
-        </p>
-      )}
-
-      {/* ATC */}
-      {product && variantId ? (
-        <AddToCartButton
-          product={product}
-          variantId={variantId}
-          className="btn-primary w-full"
-        />
-      ) : (
-        <button className="btn-primary w-full" disabled>
-          Coming Soon
-        </button>
-      )}
     </article>
   );
 }
