@@ -30,7 +30,7 @@ export default function ProductCard({
 
   return (
     <article
-      className="relative flex flex-col bg-white rounded cursor-pointer"
+      className="relative flex flex-col flex-1 bg-white rounded cursor-pointer"
       style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.06)" }}
     >
       {/* Stretched link — cobre o card inteiro */}
@@ -59,7 +59,7 @@ export default function ProductCard({
 
       {/* Content */}
       <div className="relative z-10 flex flex-col flex-1 p-4 gap-4 pointer-events-none">
-        <h3 className="font-bold text-sm uppercase tracking-wide text-black leading-snug">
+        <h3 className="font-bold text-sm uppercase tracking-wide text-black leading-snug" style={{ minHeight: "2.75em" }}>
           {product.title}
         </h3>
 

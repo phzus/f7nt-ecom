@@ -5,7 +5,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, User, ShoppingCart, Menu, X } from "lucide-react";
+import { Search, ShoppingCart, Menu, X } from "lucide-react";
 import { mainNav } from "@/config/navigation";
 import { useCart } from "@/lib/cart-store";
 
@@ -81,15 +81,6 @@ export default function Header() {
                 <Search size={20} />
               </button>
 
-              {/* Account */}
-              <Link
-                href="/account"
-                aria-label="Account"
-                className="text-white opacity-75 hover:opacity-100 transition-opacity hidden md:flex"
-              >
-                <User size={20} />
-              </Link>
-
               {/* Cart with badge */}
               <button
                 onClick={openCart}
@@ -162,15 +153,6 @@ export default function Header() {
               ))}
 
               <hr className="border-white/10 my-2" />
-
-              <Link
-                href="/account"
-                onClick={() => setMenuOpen(false)}
-                className="text-white/75 hover:text-white text-base transition-colors flex items-center gap-2"
-              >
-                <User size={16} />
-                Account
-              </Link>
 
               <button
                 onClick={() => { setMenuOpen(false); openCart(); }}

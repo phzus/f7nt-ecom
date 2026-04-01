@@ -38,19 +38,19 @@ export default function AnnouncementBar() {
 
   return (
     <div
-      className="w-full flex items-center justify-center"
+      className="w-full flex items-center justify-center py-1.5"
       style={{ backgroundColor: "#ae0303", color: "#ffffff" }}
     >
       {/* ── Mobile layout ── */}
-      <div className="relative flex items-center w-full px-8 py-2 md:hidden" style={{ minHeight: "39.4px" }}>
+      <div className="relative flex items-center flex justify-center w-full px-8 md:hidden" style={{ minHeight: "34px" }}>
         {MESSAGES.length > 1 && (
           <button onClick={prev} aria-label="Previous" className="absolute left-2 opacity-75">
             <ChevronLeft size={14} />
           </button>
         )}
         <p
-          className="w-full text-center font-normal transition-opacity duration-200"
-          style={{ fontSize: "11px", lineHeight: "110%", opacity: visible ? 1 : 0 }}
+          className="w-[80%] text-center font-normal transition-opacity duration-200"
+          style={{ fontSize: "12px", lineHeight: "120%", opacity: visible ? 1 : 0 }}
         >
           {MESSAGES[current]}
         </p>
