@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default function MysteryBanner({ image }: { image?: string }) {
+export default function MysteryBanner() {
   return (
     <section className="w-full py-0" style={{ backgroundColor: "#f2f2f2" }}>
       <div className="container-main">
@@ -11,8 +11,19 @@ export default function MysteryBanner({ image }: { image?: string }) {
           style={{ background: "linear-gradient(to bottom, #000 0%, #0d2d0d 50%, #000 100%)" }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 items-center">
+            {/* Image — shown first on mobile, right on desktop */}
+            <div className="relative w-full md:hidden" style={{ aspectRatio: "1/1", maxHeight: "280px" }}>
+              <Image
+                src="/images/mystery-box.png"
+                alt="Mystery Cash Box"
+                fill
+                className="object-contain"
+                sizes="100vw"
+              />
+            </div>
+
             {/* Text — left */}
-            <div className="flex flex-col gap-4 p-10 md:p-12">
+            <div className="flex flex-col gap-4 p-10 md:p-12 md:pl-20">
               <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.55)" }}>
                 LIMITED EDITION
               </p>
@@ -49,10 +60,10 @@ export default function MysteryBanner({ image }: { image?: string }) {
               </Link>
             </div>
 
-            {/* Image — right */}
-            <div className="relative w-full" style={{ aspectRatio: "1/1", maxHeight: "420px" }}>
+            {/* Image — right on desktop, hidden on mobile (shown above) */}
+            <div className="relative w-full hidden md:block" style={{ aspectRatio: "1/1", maxHeight: "420px" }}>
               <Image
-                src={image ?? "/images/mystery-box.png"}
+                src="/images/mystery-box.png"
                 alt="Mystery Cash Box"
                 fill
                 className="object-contain"

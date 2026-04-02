@@ -10,7 +10,7 @@ import GiveawaySection from "@/components/home/GiveawaySection";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import FaqSection from "@/components/home/FaqSection";
-import { getProducts, getProductsByCollection, enrichProduct } from "@/lib/cartpanda/products";
+import { getProductsByCollection, enrichProduct } from "@/lib/cartpanda/products";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -35,30 +35,18 @@ async function fetchCollection(id: number) {
   }
 }
 
-async function getMysteryBoxImage(): Promise<string | undefined> {
-  try {
-    const all = await getProducts({});
-    const mystery = all.find((p) => p.title.toLowerCase().includes("mystery"));
-    const enriched = mystery ? enrichProduct(mystery) : null;
-    return enriched?.images?.[0]?.src;
-  } catch {
-    return undefined;
-  }
-}
-
 export default async function HomePage() {
   const multiplier = parseInt(
     process.env.NEXT_PUBLIC_ENTRIES_MULTIPLIER ?? "200",
     10
   );
 
-  const [fastPassProducts, newReleases, capProducts, apparelProducts, mysteryBoxImage] =
+  const [fastPassProducts, newReleases, capProducts, apparelProducts] =
     await Promise.all([
       fetchCollection(COLLECTION_FAST_PASS),
       fetchCollection(COLLECTION_NEW_RELEASES),
       fetchCollection(COLLECTION_CAPS),
       fetchCollection(COLLECTION_TSHIRTS),
-      getMysteryBoxImage(),
     ]);
 
   return (
@@ -76,7 +64,7 @@ export default async function HomePage() {
       <FastPassGrid products={fastPassProducts} multiplier={multiplier} />
 
       {/* 5. Mystery Cash Boxes */}
-      <MysteryBanner image={mysteryBoxImage} />
+      <MysteryBanner />
 
       {/* 6. NEW RELEASES grid */}
       {newReleases.length > 0 && (
