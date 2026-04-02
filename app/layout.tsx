@@ -26,6 +26,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "https://f7nt.co"
   ),
+  icons: {
+    icon: [
+      { url: "/favicon light mode.svg", media: "(prefers-color-scheme: light)" },
+      { url: "/favicon dark mode.svg", media: "(prefers-color-scheme: dark)" },
+    ],
+  },
   openGraph: {
     siteName: "f7nt.co",
     locale: "en_US",
