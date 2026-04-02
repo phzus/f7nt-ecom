@@ -106,11 +106,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
             >
               You May Also Like
             </h2>
-            <ProductCarousel
-              products={relatedProducts}
-              multiplier={multiplier}
-              desktopCols={4}
-            />
+            <div className="mx-[-1rem] md:mx-0">
+              <ProductCarousel
+                products={relatedProducts}
+                multiplier={multiplier}
+                desktopCols={4}
+              />
+            </div>
           </section>
         )}
       </div>

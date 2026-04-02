@@ -48,12 +48,14 @@ export default function FeaturedProducts({
         </div>
       </div>
 
-      {/* Carrossel — sem padding, vai até a borda no mobile */}
-      <ProductCarousel
-        products={products.slice(0, 8)}
-        multiplier={multiplier}
-        desktopCols={cols}
-      />
+      {/* Mobile: borda a borda — Desktop: alinhado ao container-main */}
+      <div className="md:max-w-[1200px] md:mx-auto md:px-5">
+        <ProductCarousel
+          products={products.slice(0, 8)}
+          multiplier={multiplier}
+          desktopCols={cols}
+        />
+      </div>
     </section>
   );
 }
