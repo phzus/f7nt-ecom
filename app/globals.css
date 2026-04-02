@@ -108,7 +108,7 @@
 
   /* ── Buttons ── */
   .btn-primary {
-    @apply bg-brand-black text-white font-bold text-sm uppercase tracking-wider px-5 py-3.5 rounded transition-all duration-200;
+    @apply bg-brand-black text-white font-bold text-sm uppercase tracking-wider px-0 sm:px-5 py-3.5 rounded transition-all duration-200;
     letter-spacing: 1px;
   }
 
@@ -121,7 +121,7 @@
   }
 
   .btn-outline {
-    @apply bg-transparent text-black font-bold text-sm uppercase tracking-wider px-5 py-3.5 rounded transition-all duration-200;
+    @apply bg-transparent text-black font-bold text-sm uppercase tracking-wider px-0 sm:px-5 py-3.5 rounded transition-all duration-200;
     border: 1.5px solid #000;
     letter-spacing: 1px;
   }
