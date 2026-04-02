@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       Authorization: `Bearer ${token}`,
       Accept: "application/json",
     },
-    next: { revalidate: 3600 },
+    next: { revalidate: 60 },
   });
 
   if (!response.ok) {

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     "Shop f7nt.co and automatically earn entries to win a 2026 Limited BMW M4 Cummins + $10,000 cash. Every $1 spent = 200 entries.",
 };
 
-export const revalidate = 300; // ISR: revalidate every 5 minutes
+export const revalidate = 60; // ISR: revalidate every 60 seconds
 
 // Helper: hide internal upsell/funnel products from public pages
 const isUpsellProduct = (title: string) => /\[(UP\d+|F\d*)\]/i.test(title);
