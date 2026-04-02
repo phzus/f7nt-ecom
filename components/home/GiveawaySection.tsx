@@ -60,7 +60,7 @@ export default function GiveawaySection() {
           THIS MURDERED OUT BMW M4 COULD BE YOURS
         </h2>
         <p
-          className="text-sm mt-5 max-w-2xl mx-auto leading-relaxed"
+          className="text-sm mt-5 max-w-4xl mx-auto leading-relaxed"
           style={{ color: "rgba(255,255,255,0.80)" }}
         >
           This fully blacked-out BMW M4 packs an aggressively tuned engine,
