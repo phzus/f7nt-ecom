@@ -35,6 +35,17 @@ export async function getProductById(
   return (data as { product?: CartPandaProduct })?.product ?? (data as CartPandaProduct) ?? null;
 }
 
+export async function getProductsByCollection(
+  collectionId: number
+): Promise<CartPandaProduct[]> {
+  const data = await cartpandaFetch<ProductsResponse>(
+    `/collections/${collectionId}/products`,
+    { revalidate: 60 }
+  );
+  const all: CartPandaProduct[] = data?.products ?? [];
+  return all.filter((p) => !p.status || p.status === "active");
+}
+
 export async function getAllProductHandles(): Promise<string[]> {
   const products = await getProducts();
   return products.map((p) => p.handle).filter(Boolean);
