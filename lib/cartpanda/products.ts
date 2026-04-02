@@ -11,10 +11,21 @@ export async function getProducts(
   _opts?: { limit?: number }
 ): Promise<CartPandaProduct[]> {
   const data = await cartpandaFetch<ProductsResponse>("/products", {
-    revalidate: 3600,
+    revalidate: 60,
   });
   const all: CartPandaProduct[] = data?.products ?? [];
   // CartPanda ignores ?status= query params — filter client-side
+  return all.filter((p) => !p.status || p.status === "active");
+}
+
+export async function getProductsByCollection(
+  collectionId: number
+): Promise<CartPandaProduct[]> {
+  const data = await cartpandaFetch<ProductsResponse>(
+    `/products?collection_id=${collectionId}`,
+    { revalidate: 60 }
+  );
+  const all: CartPandaProduct[] = data?.products ?? [];
   return all.filter((p) => !p.status || p.status === "active");
 }
 
