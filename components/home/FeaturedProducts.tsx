@@ -23,9 +23,10 @@ export default function FeaturedProducts({
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full py-20" style={{ backgroundColor: "#f2f2f2" }}>
-      <div className="container-main">
-        <div className="flex items-end justify-between mb-8">
+    <section className="w-full py-20 overflow-hidden" style={{ backgroundColor: "#f2f2f2" }}>
+      {/* Header — mantém padding do container */}
+      <div className="container-main mb-8">
+        <div className="flex items-end justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#8e8e8e" }}>
               {eyebrow}
@@ -45,13 +46,14 @@ export default function FeaturedProducts({
             View All
           </Link>
         </div>
-
-        <ProductCarousel
-          products={products.slice(0, 8)}
-          multiplier={multiplier}
-          desktopCols={cols}
-        />
       </div>
+
+      {/* Carrossel — sem padding, vai até a borda no mobile */}
+      <ProductCarousel
+        products={products.slice(0, 8)}
+        multiplier={multiplier}
+        desktopCols={cols}
+      />
     </section>
   );
 }

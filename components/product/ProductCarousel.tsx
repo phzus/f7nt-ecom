@@ -11,6 +11,9 @@ interface ProductCarouselProps {
   desktopCols?: 3 | 4;
 }
 
+// Mesmo valor do px-4 do container-main no mobile (16px)
+const MOBILE_OFFSET = 16;
+
 export default function ProductCarousel({
   products,
   multiplier = 200,
@@ -20,10 +23,14 @@ export default function ProductCarousel({
     <Swiper
       slidesPerView={1.35}
       spaceBetween={12}
+      slidesOffsetBefore={MOBILE_OFFSET}
+      slidesOffsetAfter={MOBILE_OFFSET}
       breakpoints={{
         768: {
           slidesPerView: desktopCols,
           spaceBetween: 16,
+          slidesOffsetBefore: 0,
+          slidesOffsetAfter: 0,
         },
       }}
     >
