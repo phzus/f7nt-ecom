@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default function MysteryBanner({ image }: { image?: string }) {
+export default function MysteryBanner() {
   return (
     <section className="w-full py-0" style={{ backgroundColor: "#f2f2f2" }}>
       <div className="container-main">
@@ -52,7 +52,7 @@ export default function MysteryBanner({ image }: { image?: string }) {
             {/* Image — right */}
             <div className="relative w-full" style={{ aspectRatio: "1/1", maxHeight: "420px" }}>
               <Image
-                src={image ?? "/images/mystery-box.png"}
+                src="/images/mystery-box.png"
                 alt="Mystery Cash Box"
                 fill
                 className="object-contain"

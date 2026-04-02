@@ -10,7 +10,7 @@ import GiveawaySection from "@/components/home/GiveawaySection";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import FaqSection from "@/components/home/FaqSection";
-import { getProducts, getProductsByCollection, enrichProduct } from "@/lib/cartpanda/products";
+import { getProducts, enrichProduct } from "@/lib/cartpanda/products";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -21,47 +21,79 @@ export const metadata: Metadata = {
 
 export const revalidate = 60; // ISR: revalidate every 60 seconds
 
-// CartPanda collection IDs
-const COLLECTION_FAST_PASS   = 2034730;
-const COLLECTION_NEW_RELEASES = 2035122;
-const COLLECTION_CAPS        = 2034733;
-const COLLECTION_TSHIRTS     = 2034734;
+// Helper: hide internal upsell/funnel products from public pages
+const isUpsellProduct = (title: string) => /\[(UP\d+|F\d*)\]/i.test(title);
 
-async function fetchCollection(id: number) {
+async function getHomeProducts() {
   try {
-    return (await getProductsByCollection(id)).map(enrichProduct);
+    const allProducts = await getProducts({ limit: 20 });
+    return allProducts
+      .filter((p) => !isUpsellProduct(p.title))
+      .map(enrichProduct);
   } catch {
     return [];
   }
 }
 
-async function getMysteryBoxImage(): Promise<string | undefined> {
-  try {
-    const all = await getProducts({});
-    const mystery = all.find((p) =>
-      p.title.toLowerCase().includes("mystery")
-    );
-    const enriched = mystery ? enrichProduct(mystery) : null;
-    return enriched?.images?.[0]?.src ?? enriched?.featured_image?.src;
-  } catch {
-    return undefined;
-  }
-}
-
 export default async function HomePage() {
+  const products = await getHomeProducts();
   const multiplier = parseInt(
     process.env.NEXT_PUBLIC_ENTRIES_MULTIPLIER ?? "200",
     10
   );
 
-  const [fastPassProducts, newReleases, capProducts, apparelProducts, mysteryBoxImage] =
-    await Promise.all([
-      fetchCollection(COLLECTION_FAST_PASS),
-      fetchCollection(COLLECTION_NEW_RELEASES),
-      fetchCollection(COLLECTION_CAPS),
-      fetchCollection(COLLECTION_TSHIRTS),
-      getMysteryBoxImage(),
-    ]);
+  // Fast pass products: filter by title or tags
+  const fastPassProducts = products
+    .filter(
+      (p) =>
+        p.title.toLowerCase().includes("fast pass") ||
+        p.title.toLowerCase().includes("fastpass") ||
+        p.tags?.some(
+          (t) =>
+            t.toLowerCase().includes("fast-pass") ||
+            t.toLowerCase().includes("fastpass")
+        )
+    )
+    .slice(0, 4);
+
+  const nonFastPass = products.filter((p) => !fastPassProducts.includes(p));
+
+  // NEW RELEASES — first 4 non-fastpass products
+  const newReleases = nonFastPass.slice(0, 4);
+
+  // Caps / headwear
+  const isCap = (p: (typeof products)[0]) => {
+    const t = p.title.toLowerCase();
+    const type = (p.product_type ?? "").toLowerCase();
+    return (
+      t.includes("cap") ||
+      t.includes("hat") ||
+      t.includes("trucker") ||
+      type.includes("cap") ||
+      type.includes("hat") ||
+      p.tags?.some((tag) => ["cap", "hat", "headwear"].includes(tag.toLowerCase()))
+    );
+  };
+
+  // T-shirts / apparel
+  const isTshirt = (p: (typeof products)[0]) => {
+    const t = p.title.toLowerCase();
+    const type = (p.product_type ?? "").toLowerCase();
+    return (
+      t.includes("t-shirt") ||
+      t.includes("tshirt") ||
+      t.includes("shirt") ||
+      t.includes("hoodie") ||
+      type.includes("shirt") ||
+      type.includes("apparel") ||
+      p.tags?.some((tag) =>
+        ["shirt", "t-shirt", "apparel", "tshirt"].includes(tag.toLowerCase())
+      )
+    );
+  };
+
+  const capProducts     = nonFastPass.filter(isCap).slice(0, 3);
+  const apparelProducts = nonFastPass.filter(isTshirt).slice(0, 3);
 
   return (
     <>
@@ -78,7 +110,7 @@ export default async function HomePage() {
       <FastPassGrid products={fastPassProducts} multiplier={multiplier} />
 
       {/* 5. Mystery Cash Boxes */}
-      <MysteryBanner image={mysteryBoxImage} />
+      <MysteryBanner />
 
       {/* 6. NEW RELEASES grid */}
       {newReleases.length > 0 && (
@@ -109,7 +141,7 @@ export default async function HomePage() {
         <FeaturedProducts
           products={apparelProducts}
           title="STREETWEAR ESSENTIALS"
-          eyebrow="T-SHIRTS"
+          eyebrow="APPAREL"
           multiplier={multiplier}
           cols={3}
         />
