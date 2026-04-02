@@ -5,25 +5,13 @@ export default function MysteryBanner() {
   return (
     <section className="w-full py-0" style={{ backgroundColor: "#f2f2f2" }}>
       <div className="container-main">
-        {/* Card */}
         <div
           className="relative overflow-hidden rounded-2xl"
           style={{ background: "linear-gradient(to bottom, #000 0%, #0d2d0d 50%, #000 100%)" }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 items-center">
-            {/* Image — shown first on mobile, right on desktop */}
-            <div className="relative w-full md:hidden" style={{ aspectRatio: "1/1", maxHeight: "280px" }}>
-              <Image
-                src="/images/mystery-box.png"
-                alt="Mystery Cash Box"
-                fill
-                className="object-contain"
-                sizes="100vw"
-              />
-            </div>
-
-            {/* Text — left */}
-            <div className="flex flex-col gap-4 p-10 md:p-12 md:pl-20">
+          <div className="flex flex-col md:grid md:grid-cols-2 items-center">
+            {/* Text */}
+            <div className="flex flex-col gap-4 p-10 md:p-12 md:pl-20 order-2 md:order-1">
               <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.55)" }}>
                 LIMITED EDITION
               </p>
@@ -37,7 +25,6 @@ export default function MysteryBanner() {
                 LOADED WITH MYSTERY APPAREL &amp; ACCESSORIES!
               </p>
 
-              {/* LUCKIEST PRODUCT badge */}
               <div className="self-start">
                 <span
                   className="badge-shimmer badge-tier-bronze inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold uppercase"
@@ -60,8 +47,8 @@ export default function MysteryBanner() {
               </Link>
             </div>
 
-            {/* Image — right on desktop, hidden on mobile (shown above) */}
-            <div className="relative w-full hidden md:block" style={{ aspectRatio: "1/1", maxHeight: "420px" }}>
+            {/* Image — único elemento, aparece em cima no mobile e à direita no desktop */}
+            <div className="relative w-full order-1 md:order-2" style={{ aspectRatio: "1/1", maxHeight: "420px" }}>
               <Image
                 src="/images/mystery-box.png"
                 alt="Mystery Cash Box"
