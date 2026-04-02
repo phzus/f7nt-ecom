@@ -24,7 +24,8 @@ export default function ProductCard({
 }: ProductCardProps) {
   const price     = product.variants?.[0]?.price ?? 0;
   const variantId = product.variants?.[0]?.id;
-  const image     = product.images?.[0]?.src;
+  const rawImage  = product.images?.[0]?.src;
+  const image     = rawImage ?? (product.title.toLowerCase().includes("mystery") ? "/images/mystery-box.png" : undefined);
   const sku       = product.variants?.[0]?.sku;
   const entries   = calcProductEntries(price, multiplier, sku);
 
