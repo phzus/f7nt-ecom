@@ -150,6 +150,10 @@
     @apply bg-[#f2f2f2] text-black font-normal text-[15px] min-h-[47px] w-full px-7 rounded-none transition-colors duration-200;
   }
 
+  .btn-atc:hover {
+    @apply bg-[#333] text-white;
+  }
+
   .btn-buy-now {
     @apply bg-black text-white font-normal text-[15px] min-h-[47px] w-full px-7 py-3.5 rounded-none transition-colors duration-200;
   }
