@@ -33,14 +33,14 @@ export default function FeaturedProducts({
             </p>
             <h2
               className="font-black"
-              style={{ color: "#000", letterSpacing: "-0.02em", fontSize: "clamp(1rem, 7vw, 2.5rem)", lineHeight: "130%" }}
+              style={{ color: "#000", letterSpacing: "-0.02em", fontSize: "clamp(1rem, 5.8vw, 2.5rem)", lineHeight: "130%" }}
             >
               {title}
             </h2>
           </div>
           <Link
             href="/catalog"
-            className="text-sm font-bold uppercase tracking-wider underline underline-offset-4 transition-opacity hover:opacity-60 self-end mb-2 whitespace-nowrap"
+            className="text-xs md:text-sm font-bold uppercase tracking-wider underline underline-offset-4 transition-opacity hover:opacity-60 self-end mb-2 whitespace-nowrap"
             style={{ color: "#1a1a1a" }}
           >
             View All

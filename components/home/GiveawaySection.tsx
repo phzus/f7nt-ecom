@@ -55,12 +55,12 @@ export default function GiveawaySection() {
       <div className="container-main text-center">
         <h2
           className="font-black text-white uppercase leading-tight"
-          style={{ fontSize: "clamp(1rem, 7vw, 2.5rem)", letterSpacing: "-0.01em", lineHeight: "130%" }}
+          style={{ fontSize: "clamp(1rem, 5.8vw, 2.5rem)", letterSpacing: "-0.01em", lineHeight: "130%" }}
         >
           THIS MURDERED OUT BMW M4 COULD BE YOURS
         </h2>
         <p
-          className="text-sm mt-5 max-w-4xl mx-auto leading-relaxed"
+          className="text-xs md:text-sm mt-5 max-w-4xl mx-auto leading-relaxed"
           style={{ color: "rgba(255,255,255,0.80)" }}
         >
           This fully blacked-out BMW M4 packs an aggressively tuned engine,

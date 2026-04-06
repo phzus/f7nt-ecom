@@ -46,7 +46,7 @@ export default function TestimonialsSection() {
           <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "#8e8e8e" }}>
             REVIEWS
           </p>
-          <h2 className="font-black" style={{ color: "#000", letterSpacing: "-0.02em", fontSize: "clamp(1rem, 7vw, 2.5rem)", lineHeight: "130%" }}>
+          <h2 className="font-black" style={{ color: "#000", letterSpacing: "-0.02em", fontSize: "clamp(1rem, 5.8vw, 2.5rem)", lineHeight: "130%" }}>
             WHAT PEOPLE SAY
           </h2>
         </div>
@@ -55,7 +55,7 @@ export default function TestimonialsSection() {
           {TESTIMONIALS.map((t, i) => (
             <article key={i} className="card-testimonial">
               <StarRating rating={t.rating} />
-              <p className="mt-4 text-base leading-relaxed" style={{ color: "#555", lineHeight: "1.6" }}>
+              <p className="mt-4 text-xs md:text-base leading-relaxed" style={{ color: "#555", lineHeight: "1.6" }}>
                 &ldquo;{t.text}&rdquo;
               </p>
               <div className="mt-4 pt-4 border-t" style={{ borderColor: "#f0f0f0" }}>

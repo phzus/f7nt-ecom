@@ -60,7 +60,7 @@ export default function CountdownTimer() {
       <div className="container-main flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12">
         <h2
           className="font-black uppercase whitespace-nowrap glow-red"
-          style={{ color: "#ff0000", letterSpacing: "2px", fontSize: "clamp(1rem, 7vw, 3rem)", lineHeight: "130%" }}
+          style={{ color: "#ff0000", letterSpacing: "2px", fontSize: "clamp(1rem, 5.8vw, 3rem)", lineHeight: "130%" }}
         >
           OFFER EXPIRING IN:
         </h2>

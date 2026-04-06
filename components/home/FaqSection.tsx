@@ -50,7 +50,7 @@ export default function FaqSection() {
           </p>
           <h2
             className="font-black text-black"
-            style={{ fontSize: "clamp(1rem, 7vw, 2.5rem)", letterSpacing: "-0.02em", lineHeight: "130%" }}
+            style={{ fontSize: "clamp(1rem, 5.8vw, 2.5rem)", letterSpacing: "-0.02em", lineHeight: "130%" }}
           >
             THE ANSWERS YOU&apos;RE LOOKING FOR
           </h2>
@@ -74,7 +74,7 @@ export default function FaqSection() {
                   className={`w-full flex items-center justify-between text-left px-8 py-6 transition-colors ${isOpen ? "bg-gray-50" : "hover:bg-gray-50"}`}
                   aria-expanded={isOpen}
                 >
-                  <span className="text-base font-bold pr-6" style={{ color: "#000" }}>
+                  <span className="text-xs md:text-base font-bold pr-6" style={{ color: "#000" }}>
                     {item.question}
                   </span>
                   <span
@@ -95,7 +95,7 @@ export default function FaqSection() {
                   }}
                 >
                   <p
-                    className="text-sm leading-relaxed px-8 pt-4 pb-7"
+                    className="text-xs md:text-sm leading-relaxed px-8 pt-4 pb-7"
                     style={{ color: "#4b5563", lineHeight: "1.7" }}
                   >
                     {item.answer}
@@ -107,7 +107,7 @@ export default function FaqSection() {
         </div>
 
         <div className="text-center mt-10 max-w-4xl mx-auto">
-          <p className="text-sm" style={{ color: "#555" }}>
+          <p className="text-xs md:text-sm" style={{ color: "#555" }}>
             Still have questions?{" "}
             <a href="/contact" className="font-semibold underline" style={{ color: "#0000ff" }}>
               Contact us
