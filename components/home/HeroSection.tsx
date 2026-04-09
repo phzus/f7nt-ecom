@@ -18,7 +18,7 @@ export default function HeroSection() {
           />
         </div>
         {/* Mobile */}
-        <div className="block md:hidden relative w-full" style={{ aspectRatio: "9/5" }}>
+        <div className="block md:hidden relative w-full" style={{ aspectRatio: "1080/1226" }}>
           <Image
             src="/images/HERO-MOBILE.webp"
             alt="Win a 2026 BMW M4 Cummins + $10,000"
