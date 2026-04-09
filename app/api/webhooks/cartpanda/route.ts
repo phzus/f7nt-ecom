@@ -1,6 +1,6 @@
 // API Route: POST /api/webhooks/cartpanda
 // Receives order events from CartPanda, generates a unique raffle entry code,
-// and sends a confirmation email to the customer via Resend.
+// and sends a confirmation email (in English) to the customer via Resend.
 
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       order?.customer?.name ??
       order?.customer?.first_name ??
       order?.billing_address?.first_name ??
-      "Cliente";
+      "Customer";
 
     const orderId: string | number = order?.id ?? order?.order_id ?? "—";
 
@@ -43,14 +43,14 @@ export async function POST(request: NextRequest) {
     const { error } = await resend.emails.send({
       from: "F7NT Store <no-reply@f7ntco.com>",
       to: customerEmail,
-      subject: "🎟️ Sua entrada na rifa está confirmada!",
+      subject: "🎟️ Your raffle entry is confirmed!",
       html: `
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Confirmação de compra – F7NT</title>
+  <title>Purchase Confirmation – F7NT</title>
 </head>
 <body style="margin:0;padding:0;background:#0a0a0a;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#f0f0f0;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 16px;">
@@ -71,18 +71,18 @@ export async function POST(request: NextRequest) {
             <td style="padding:36px 32px;">
 
               <p style="margin:0 0 8px;font-size:22px;font-weight:700;color:#fff;">
-                Compra confirmada, ${customerName}! 🎉
+                Purchase confirmed, ${customerName}! 🎉
               </p>
               <p style="margin:0 0 28px;font-size:15px;color:#aaa;line-height:1.6;">
-                Obrigado por participar. Sua entrada na rifa foi registrada com sucesso.
-                Guarde o código abaixo — ele é a sua prova de participação.
+                Thank you for participating. Your raffle entry has been successfully registered.
+                Save the code below — it's your proof of participation.
               </p>
 
               <!-- Entry code box -->
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
                 <tr>
                   <td style="background:#1a1a1a;border:2px solid #c8a000;border-radius:10px;padding:24px;text-align:center;">
-                    <p style="margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:2px;color:#c8a000;text-transform:uppercase;">Seu código de entrada</p>
+                    <p style="margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:2px;color:#c8a000;text-transform:uppercase;">Your entry code</p>
                     <p style="margin:0;font-size:36px;font-weight:800;letter-spacing:8px;color:#fff;font-family:'Courier New',monospace;">
                       ${entryCode}
                     </p>
@@ -92,19 +92,19 @@ export async function POST(request: NextRequest) {
 
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;border-collapse:collapse;">
                 <tr>
-                  <td style="font-size:13px;color:#777;padding:6px 0;border-bottom:1px solid #222;">Pedido</td>
+                  <td style="font-size:13px;color:#777;padding:6px 0;border-bottom:1px solid #222;">Order</td>
                   <td style="font-size:13px;color:#ccc;padding:6px 0;border-bottom:1px solid #222;text-align:right;">#${orderId}</td>
                 </tr>
                 <tr>
-                  <td style="font-size:13px;color:#777;padding:6px 0;">E-mail</td>
+                  <td style="font-size:13px;color:#777;padding:6px 0;">Email</td>
                   <td style="font-size:13px;color:#ccc;padding:6px 0;text-align:right;">${customerEmail}</td>
                 </tr>
               </table>
 
               <p style="margin:0;font-size:13px;color:#666;line-height:1.7;">
-                Em caso de dúvidas, responda este e-mail ou acesse
+                If you have any questions, reply to this email or visit
                 <a href="https://f7ntco.com" style="color:#c8a000;text-decoration:none;">f7ntco.com</a>.
-                Boa sorte! 🤞
+                Good luck! 🤞
               </p>
 
             </td>
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
           <tr>
             <td style="background:#0d0d0d;padding:20px 32px;text-align:center;border-top:1px solid #222;">
               <p style="margin:0;font-size:11px;color:#444;">
-                © ${new Date().getFullYear()} F7NT Store · Este é um e-mail automático, não é necessário responder.
+                © ${new Date().getFullYear()} F7NT Store · This is an automated email, no reply needed.
               </p>
             </td>
           </tr>
