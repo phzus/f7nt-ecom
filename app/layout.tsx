@@ -3,6 +3,7 @@
 
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
@@ -58,6 +59,7 @@ export default function RootLayout({
         </Providers>
         <Footer />
       </body>
+      <GoogleAnalytics gaId="G-F8L6G5C5JV" />
     </html>
   );
 }
